@@ -1,5 +1,6 @@
 {
   "preset": "ts-jest",
   "testEnvironment": "node",
-  "modulePathIgnorePatterns": ["<rootDir>/dist"]
+  "modulePathIgnorePatterns": ["<rootDir>/dist/", "<rootDir>/build/"],
+  "testPathIgnorePatterns": ["<rootDir>/dist/", "<rootDir>/build/"]
 }
