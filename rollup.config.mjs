@@ -47,7 +47,7 @@ export default {
     license({
       banner: {
         content: {
-          file: fileURLToPath(new URL('license-header', import.meta.url)),
+          file: fileURLToPath(new URL('license-header.txt', import.meta.url)),
         },
       },
     }),
