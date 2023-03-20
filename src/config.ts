@@ -65,6 +65,7 @@ export const config: {
     'jest.config.json': 'jest.config.json',
     LICENSE: 'LICENSE',
     'license-config.json': 'license-config.json',
+    'license-header.txt': 'license-header.txt',
     '.prettierignore': '.prettierignore',
     '.prettierrc.json': '.prettierrc.json',
     'rollup.config.mjs': 'rollup.config.mjs',
