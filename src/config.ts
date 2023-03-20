@@ -27,13 +27,13 @@ export const config: {
     '@rollup/plugin-node-resolve',
     '@types/google-apps-script',
     '@types/jest',
-    'copyfiles',
     'eslint',
     'eslint-config-prettier',
     'eslint-plugin-prettier',
     'gts',
     'jest',
     'license-check-and-add',
+    'ncp',
     'prettier',
     'rimraf',
     'rollup',
@@ -52,9 +52,9 @@ export const config: {
     'license:check': 'license-check-and-add check -f license-config.json',
     'license:add': 'license-check-and-add add -f license-config.json',
     deploy:
-      'npm run lint && npm run test && npm run build && copyfiles appsscript.json dist && copyfiles .clasp-dev.json .clasp.json && clasp push',
+      'npm run lint && npm run test && npm run build && ncp appsscript.json dist && ncp .clasp-dev.json .clasp.json && clasp push',
     'deploy-prod':
-      'npm run lint && npm run test && npm run build && copyfiles appsscript.json dist && copyfiles .clasp-prod.json .clasp.json && clasp push',
+      'npm run lint && npm run test && npm run build && ncp appsscript.json dist && ncp .clasp-prod.json .clasp.json && clasp push',
   },
   files: {
     '.claspignore': '.claspignore',
