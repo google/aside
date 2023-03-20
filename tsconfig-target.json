@@ -1,0 +1,19 @@
+{
+  "compilerOptions": {
+    "target": "es2020",
+    "module": "ES2020",
+    "lib": ["es2020"],
+    "moduleResolution": "node",
+    "outDir": "build",
+    "rootDir": ".",
+    "strict": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "resolveJsonModule": true,
+    "allowUnreachableCode": false,
+    "allowUnusedLabels": false
+  },
+  "include": ["src/**/*.ts", "rollup.config.mjs"],
+  "exclude": ["test/**/*.*"]
+}

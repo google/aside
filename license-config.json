@@ -1,0 +1,27 @@
+{
+  "ignore": [
+    ".claspignore",
+    ".editorconfig",
+    ".eslintignore",
+    ".gitignore",
+    ".prettierignore",
+    "*.txt",
+    "build",
+    "dist"
+  ],
+  "license": "LICENSE",
+  "licenseFormats": {
+    "js|ts|mjs": {
+      "prepend": "/**",
+      "append": " */",
+      "eachLine": {
+        "prepend": " * "
+      }
+    },
+    "html|md": {
+      "prepend": "<!--",
+      "append": "-->"
+    }
+  },
+  "trailingWhitespace": "TRIM"
+}
