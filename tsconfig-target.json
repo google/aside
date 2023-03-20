@@ -12,7 +12,8 @@
     "forceConsistentCasingInFileNames": true,
     "resolveJsonModule": true,
     "allowUnreachableCode": false,
-    "allowUnusedLabels": false
+    "allowUnusedLabels": false,
+    "types": ["jest"]
   },
   "include": ["src/**/*.ts", "rollup.config.mjs"],
   "exclude": ["test/**/*.*"]
