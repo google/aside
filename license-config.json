@@ -8,7 +8,8 @@
     "*.txt",
     "CONTRIBUTING",
     "build",
-    "dist"
+    "dist",
+    "test"
   ],
   "license": "license-header.txt",
   "licenseFormats": {
