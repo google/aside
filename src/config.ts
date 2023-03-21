@@ -27,6 +27,7 @@ export const config: {
     '@rollup/plugin-node-resolve',
     '@types/google-apps-script',
     '@types/jest',
+    '@typescript-eslint/eslint-plugin',
     'eslint',
     'eslint-config-prettier',
     'eslint-plugin-prettier',
@@ -52,9 +53,9 @@ export const config: {
     'license:check': 'license-check-and-add check -f license-config.json',
     'license:add': 'license-check-and-add add -f license-config.json',
     deploy:
-      'npm run lint && npm run test && npm run build && ncp appsscript.json dist/appsscript.json && ncp .clasp-dev.json .clasp.json && clasp push',
+      'npm run license:add && npm run lint && npm run test && npm run build && ncp appsscript.json dist/appsscript.json && ncp .clasp-dev.json .clasp.json && clasp push',
     'deploy-prod':
-      'npm run lint && npm run test && npm run build && ncp appsscript.json dist/appsscript.json && ncp .clasp-prod.json .clasp.json && clasp push',
+      'npm run license:add && npm run lint && npm run test && npm run build && ncp appsscript.json dist/appsscript.json && ncp .clasp-prod.json .clasp.json && clasp push',
   },
   files: {
     '.claspignore': '.claspignore',
