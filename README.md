@@ -16,6 +16,8 @@ limitations under the License.
 
 # Apps Script in IDE (ASIDE)
 
+[![NPM Version](https://img.shields.io/npm/v/@google/aside)](https://www.npmjs.com/package/@google/aside)
+[![GitHub Action: CI](https://github.com/google/aside/actions/workflows/ci.yml/badge.svg)](https://github.com/google/aside/actions/workflows/ci.yml)
 [![Code Style: Google](https://img.shields.io/badge/code%20style-google-blueviolet.svg)](https://github.com/google/gts)
 
 ## Overview
