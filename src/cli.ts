@@ -77,7 +77,7 @@ export interface Options {
  *
  * @param {Options} options
  */
-async function handlePackageJson(options: Options) {
+export async function handlePackageJson(options: Options) {
   const pkgHelper = new PackageHelper();
 
   // Load package.json
@@ -234,7 +234,7 @@ async function handleConfigs(options: Options) {
 /**
  * Copy template if no .ts files in src/.
  */
-async function handleTemplate() {
+export async function handleTemplate() {
   const cwd = process.cwd();
   const sourceDirName = path.join(__dirname, '../../template');
   const targetDirName = path.join(cwd, 'src');
@@ -306,7 +306,7 @@ async function handleClasp(options: Options) {
 /**
  * Handle environment initialization.
  */
-async function init() {
+export async function init() {
   const projectTitle =
     cli.flags.title ??
     (await queryText('Project Title', 'Untitled', {

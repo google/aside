@@ -30,7 +30,7 @@ export class ClaspHelper {
    *
    * @returns {Promise<boolean>}
    */
-  private async isLoggedIn(): Promise<boolean> {
+  private async isLoggedIn() {
     return await fs.exists(path.join(os.homedir(), '.clasprc.json'));
   }
 
@@ -38,7 +38,9 @@ export class ClaspHelper {
    * Perform 'clasp login'.
    */
   async login() {
-    if (!(await this.isLoggedIn())) {
+    const loggedIn = await this.isLoggedIn();
+
+    if (!loggedIn) {
       spawn.sync('npx', ['clasp', 'login'], { stdio: 'inherit' });
     }
   }
@@ -48,7 +50,7 @@ export class ClaspHelper {
    *
    * @returns {Promise<boolean>}
    */
-  async isConfigured(): Promise<boolean> {
+  async isConfigured() {
     return (
       (await fs.exists('.clasp-dev.json')) ||
       (await fs.exists(path.join('dist', '.clasp.json')))
@@ -80,7 +82,7 @@ export class ClaspHelper {
    * @param {string} output
    * @returns {string}
    */
-  extractSheetsLink(output: string): string {
+  extractSheetsLink(output: string) {
     const sheetsLink = output.match(/Google Sheet: ([^\n]*)/);
 
     return sheetsLink?.length ? sheetsLink[1] : 'Not found';
@@ -91,7 +93,7 @@ export class ClaspHelper {
    * @param {string} output
    * @returns {string}
    */
-  extractScriptLink(output: string): string {
+  extractScriptLink(output: string) {
     const scriptLink = output.match(/Google Sheets Add-on script: ([^\n]*)/);
 
     return scriptLink?.length ? scriptLink[1] : 'Not found';
@@ -105,11 +107,7 @@ export class ClaspHelper {
    * @param {string} rootDir
    * @returns {Promise<{sheetLink: string, scriptLink: string}>}
    */
-  async create(
-    title: string,
-    scriptIdProd: string,
-    rootDir: string
-  ): Promise<{ sheetLink: string; scriptLink: string }> {
+  async create(title: string, scriptIdProd: string, rootDir: string) {
     await this.clean(rootDir);
 
     const res = spawn.sync(
@@ -142,12 +140,12 @@ export class ClaspHelper {
    * Put files in their designated place after (e.g. after create or clone).
    *
    * @param {string} rootDir
-   * @param {string} scriptIdProd
+   * @param {?string} scriptIdProd
    */
-  async arrangeFiles(rootDir: string, scriptIdProd: string) {
+  async arrangeFiles(rootDir: string, scriptIdProd?: string) {
     await fs.move(path.join(rootDir, '.clasp.json'), '.clasp-dev.json');
 
-    await fs.move('dist/appsscript.json', 'appsscript.json');
+    await fs.move(path.join(rootDir, 'appsscript.json'), 'appsscript.json');
 
     if (scriptIdProd) {
       this.writeConfig(scriptIdProd, '.clasp-prod.json');
@@ -169,7 +167,7 @@ export class ClaspHelper {
   ) {
     await this.clean(rootDir);
 
-    this.writeConfig(scriptIdDev, 'dist');
+    this.writeConfig(scriptIdDev, rootDir);
 
     spawn.sync('npx', ['clasp', 'clone'], { stdio: 'inherit' });
 

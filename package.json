@@ -28,7 +28,7 @@
     "build:compile": "tsc",
     "build": "npm run clean && npm run build:compile",
     "license": "license-check-and-add add -f license-config.json",
-    "test": "jest src/ --passWithNoTests",
+    "test": "jest test/ --passWithNoTests --detectOpenHandles",
     "build:bundle": "rollup --no-treeshake -c rollup.config.mjs",
     "license:check": "license-check-and-add check -f license-config.json",
     "license:add": "license-check-and-add add -f license-config.json"
