@@ -347,7 +347,6 @@ async function handleClasp(options: Options) {
  * Handle environment initialization.
  */
 export async function init() {
-  console.log('init called');
   const projectTitle =
     cli.flags.title ??
     (await queryText('Project Title', 'Untitled', {
