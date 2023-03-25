@@ -194,7 +194,7 @@ describe('package-helper', () => {
   describe('updateScripts', () => {
     const pkgHelper = new PackageHelper();
 
-    it('does not update scripts if declined', async () => {
+    it('no override if all scripts exist and --no', async () => {
       const targetScripts = {
         test: 'run test',
         lint: 'run lint',
@@ -217,7 +217,7 @@ describe('package-helper', () => {
       expect(res).toBe(false);
     });
 
-    it('does partial update scripts if declined', async () => {
+    it('partial update if some scripts exist and --no', async () => {
       const targetScripts = {
         test: 'run test',
         lint: 'run lint',
@@ -244,7 +244,7 @@ describe('package-helper', () => {
       expect(res).toBe(true);
     });
 
-    it('update scripts', async () => {
+    it('override all scripts if --yes', async () => {
       const targetScripts = {
         test: 'run test',
         lint: 'run lint',
