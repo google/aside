@@ -44,7 +44,7 @@ export const config: {
     'typescript',
   ],
   scripts: {
-    clean: 'npx rimraf build dist',
+    clean: 'rimraf build dist',
     lint: 'npm run license:check && eslint --fix src/',
     'build:compile': 'tsc',
     'build:bundle': 'rollup --no-treeshake -c rollup.config.mjs',
