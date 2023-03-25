@@ -183,7 +183,7 @@ async function query(
  * @param {string} path
  * @returns {Promise<string>}
  */
-async function readFile(path: string): Promise<string> {
+async function readFile(path: string): Promise<string | undefined> {
   try {
     return await fs.readFile(path, 'utf8');
   } catch (e) {
@@ -193,7 +193,7 @@ async function readFile(path: string): Promise<string> {
     }
   }
 
-  return '';
+  return undefined;
 }
 
 /**
