@@ -2,7 +2,7 @@
   "name": "@google/aside",
   "version": "1.0.5",
   "type": "module",
-  "description": "",
+  "description": "Apps Script IDE framework",
   "bin": "build/src/cli.js",
   "files": [
     "build/src",
@@ -14,6 +14,7 @@
     "jest.config.json",
     "LICENSE",
     "license-config.json",
+    "license-header.txt",
     ".prettierignore",
     ".prettierrc.json",
     "rollup.config.mjs",
