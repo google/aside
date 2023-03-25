@@ -197,22 +197,62 @@ async function readFile(path: string): Promise<string | undefined> {
 }
 
 /**
- * Handle config creation.
+ * Handle config merge.
+ * Compares source and target config files and merges if required.
  *
  * @param {Options} options
  */
-async function handleConfigs(options: Options) {
-  for (const filename of Object.keys(config.files)) {
+async function handleConfigMerge(options: Options) {
+  for (const filename of Object.keys(config.filesMerge)) {
+    const sourcePath = path.join(__dirname, '../../', filename);
+    let sourceLines = (await readFile(sourcePath))?.split('\n');
+
+    const targetFile = await readFile(config.filesMerge[filename]);
+    const targetLines = targetFile?.split('\n') ?? [];
+
+    const missingLines =
+      sourceLines?.filter(item => targetLines.indexOf(item) === -1) ?? [];
+
+    if (missingLines.length === 0) continue;
+
+    if (targetFile !== undefined) {
+      const message =
+        `${chalk.bold(
+          config.filesMerge[filename]
+        )} already exists but is missing content\n` +
+        missingLines.map(line => `+${chalk.green(line)}`).join('\n');
+
+      const writeFile = await query(message, 'Merge', false, options);
+
+      if (!writeFile) continue;
+    }
+
+    sourceLines = targetLines.concat(missingLines);
+
+    await writeFileAtomic(
+      config.filesMerge[filename],
+      `${sourceLines.filter(item => item).join('\n')}\n`
+    );
+  }
+}
+
+/**
+ * Handle config copy.
+ *
+ * @param {Options} options
+ */
+async function handleConfigCopy(options: Options) {
+  for (const filename of Object.keys(config.filesCopy)) {
     try {
       const sourcePath = path.join(__dirname, '../../', filename);
       const source = await readFile(sourcePath);
-      const target = await readFile(config.files[filename]);
+      const target = await readFile(config.filesCopy[filename]);
 
       if (source === target || typeof source === 'undefined') continue;
 
       const writeFile = target
         ? await query(
-            `${chalk.bold(config.files[filename])} already exists`,
+            `${chalk.bold(config.filesCopy[filename])} already exists`,
             'Overwrite',
             false,
             options
@@ -220,7 +260,7 @@ async function handleConfigs(options: Options) {
         : true;
 
       if (writeFile) {
-        await writeFileAtomic(config.files[filename], source);
+        await writeFileAtomic(config.filesCopy[filename], source);
       }
     } catch (e) {
       const err = e as Error & { code?: string };
@@ -307,6 +347,7 @@ async function handleClasp(options: Options) {
  * Handle environment initialization.
  */
 export async function init() {
+  console.log('init called');
   const projectTitle =
     cli.flags.title ??
     (await queryText('Project Title', 'Untitled', {
@@ -323,8 +364,11 @@ export async function init() {
   // Handle package.json
   await handlePackageJson(options);
 
-  // Handle configs
-  await handleConfigs(options);
+  // Handle config copy
+  await handleConfigCopy(options);
+
+  // Handle config merge
+  await handleConfigMerge(options);
 
   // Handle template
   await handleTemplate();

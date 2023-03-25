@@ -20,7 +20,8 @@ import { PackageJson } from 'type-fest';
 export const config: {
   dependencies: string[];
   scripts: PackageJson.Scripts;
-  files: Record<string, string>;
+  filesCopy: Record<string, string>;
+  filesMerge: Record<string, string>;
 } = {
   dependencies: [
     '@google/clasp',
@@ -57,19 +58,21 @@ export const config: {
     'deploy-prod':
       'npm run license:add && npm run lint && npm run test && npm run build && ncp appsscript.json dist/appsscript.json && ncp .clasp-prod.json .clasp.json && clasp push',
   },
-  files: {
-    '.claspignore': '.claspignore',
+  filesCopy: {
     '.editorconfig': '.editorconfig',
-    '.eslintignore': '.eslintignore',
     '.eslintrc.json': '.eslintrc.json',
-    '.gitignore': '.gitignore',
+    '.prettierrc.json': '.prettierrc.json',
     'jest.config.json': 'jest.config.json',
     LICENSE: 'LICENSE',
     'license-config.json': 'license-config.json',
     'license-header.txt': 'license-header.txt',
-    '.prettierignore': '.prettierignore',
-    '.prettierrc.json': '.prettierrc.json',
     'rollup.config.mjs': 'rollup.config.mjs',
-    'tsconfig-target.json': 'tsconfig.json',
+    'tsconfig.json': 'tsconfig.json',
+  },
+  filesMerge: {
+    '.claspignore': '.claspignore',
+    '.eslintignore': '.eslintignore',
+    gitignore: '.gitignore',
+    '.prettierignore': '.prettierignore',
   },
 };
