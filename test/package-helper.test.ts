@@ -1,6 +1,5 @@
 import * as fs from 'fs-extra';
 import spawn from 'cross-spawn';
-//import { fs } from 'memfs';
 import { PackageHelper } from '../src/package-helper';
 import { SpawnSyncReturns } from 'child_process';
 
@@ -128,6 +127,40 @@ describe('package-helper', () => {
       const res = pkgHelper.getMissingDependencies(targetDependencies);
 
       expect(res).toEqual(['pkg2']);
+    });
+
+    it('returns no missing dependencies if all installed', () => {
+      const pkg = {
+        dependencies: {
+          pkg1: 'v1',
+          pkg2: 'v2',
+        },
+      };
+      const targetDependencies = ['pkg1', 'pkg2'];
+
+      pkgHelper['packageJson'] = pkg;
+
+      const res = pkgHelper.getMissingDependencies(targetDependencies);
+
+      expect(res).toEqual([]);
+    });
+
+    it('returns no missing dependencies if all installed in dep and devDep', () => {
+      const pkg = {
+        dependencies: {
+          pkg1: 'v1',
+        },
+        devDependencies: {
+          pkg2: 'v2',
+        },
+      };
+      const targetDependencies = ['pkg1', 'pkg2'];
+
+      pkgHelper['packageJson'] = pkg;
+
+      const res = pkgHelper.getMissingDependencies(targetDependencies);
+
+      expect(res).toEqual([]);
     });
   });
 

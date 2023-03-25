@@ -120,10 +120,12 @@ export class PackageHelper {
    * @returns {string[]}
    */
   getMissingDependencies(targetDependencies: string[]): string[] {
+    const installedDependencies = [
+      ...Object.keys(this.packageJson.dependencies ?? {}),
+      ...Object.keys(this.packageJson.devDependencies ?? {}),
+    ];
     return this.packageJson.dependencies !== undefined
-      ? targetDependencies.filter(
-          dep => !Object.keys(this.packageJson.dependencies ?? {}).includes(dep)
-        )
+      ? targetDependencies.filter(dep => !installedDependencies.includes(dep))
       : targetDependencies;
   }
 
