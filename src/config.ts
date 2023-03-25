@@ -49,7 +49,7 @@ export const config: {
     'build:compile': 'tsc',
     'build:bundle': 'rollup --no-treeshake -c rollup.config.mjs',
     build: 'npm run clean && npm run build:compile && npm run build:bundle',
-    test: 'jest src/ --passWithNoTests',
+    test: 'jest test/ --passWithNoTests',
     'license:check': 'license-check-and-add check -f license-config.json',
     'license:add': 'license-check-and-add add -f license-config.json',
     deploy:
