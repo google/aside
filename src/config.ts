@@ -72,7 +72,7 @@ export const config: {
   filesMerge: {
     '.claspignore': '.claspignore',
     '.eslintignore': '.eslintignore',
-    gitignore: '.gitignore',
+    '.gitignore-target': '.gitignore',
     '.prettierignore': '.prettierignore',
   },
 };
