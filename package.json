@@ -1,6 +1,6 @@
 {
   "name": "@google/aside",
-  "version": "1.1.2",
+  "version": "1.2.0",
   "type": "module",
   "description": "Apps Script IDE framework",
   "bin": "dist/src/cli.js",
@@ -25,12 +25,11 @@
   "main": "index.js",
   "scripts": {
     "clean": "rimraf build",
-    "lint": "npm run license:add && eslint --fix src/",
-    "build": "npm run clean && npm run license:add && tsc && npm run copy-files",
+    "lint": "npm run license && eslint --fix src/ test/",
+    "lint:staged": "npm run license && lint-staged",
+    "build": "npm run clean && npm run lint && tsc && npm run copy-files",
     "license": "license-check-and-add add -f license-config.json",
     "test": "jest test/ --detectOpenHandles",
-    "license:check": "license-check-and-add check -f license-config.json",
-    "license:add": "license-check-and-add add -f license-config.json",
     "copy-files": "ncp .gitignore dist/.gitignore-target",
     "prepare": "is-ci || husky install"
   },
@@ -43,9 +42,6 @@
   "engines": {
     "node": ">=12"
   },
-  "pre-commit": [
-    "copy-files"
-  ],
   "author": "Google Inc.",
   "license": "Apache-2.0",
   "devDependencies": {
@@ -83,6 +79,7 @@
     "cross-spawn": "^7.0.3",
     "fs-extra": "^11.1.0",
     "json5": "^2.2.3",
+    "lint-staged": "^13.2.0",
     "meow": "^11.0.0",
     "prompts": "^2.4.2",
     "rollup-plugin-cleanup": "^3.2.1",

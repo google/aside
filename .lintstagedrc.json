@@ -1,0 +1,3 @@
+{
+  "*.ts": ["prettier --write --list-different", "eslint --fix"]
+}
