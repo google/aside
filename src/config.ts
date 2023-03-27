@@ -46,17 +46,16 @@ export const config: {
   ],
   scripts: {
     clean: 'rimraf build dist',
-    lint: 'npm run license:check && eslint --fix src/',
-    'build:compile': 'tsc',
-    'build:bundle': 'rollup --no-treeshake -c rollup.config.mjs',
-    build: 'npm run clean && npm run build:compile && npm run build:bundle',
+    lint: 'npm run license:add && eslint --fix src/',
+    bundle: 'rollup --no-treeshake -c rollup.config.mjs',
+    build: 'npm run clean && npm run bundle',
     test: 'jest test/ --passWithNoTests',
     'license:check': 'license-check-and-add check -f license-config.json',
     'license:add': 'license-check-and-add add -f license-config.json',
     deploy:
-      'npm run license:add && npm run lint && npm run test && npm run build && ncp appsscript.json dist/appsscript.json && ncp .clasp-dev.json .clasp.json && clasp push',
+      'npm run lint && npm run test && npm run build && ncp appsscript.json dist/appsscript.json && ncp .clasp-dev.json .clasp.json && clasp push',
     'deploy-prod':
-      'npm run license:add && npm run lint && npm run test && npm run build && ncp appsscript.json dist/appsscript.json && ncp .clasp-prod.json .clasp.json && clasp push',
+      'npm run lint && npm run test && npm run build && ncp appsscript.json dist/appsscript.json && ncp .clasp-prod.json .clasp.json && clasp push',
   },
   filesCopy: {
     '.editorconfig': '.editorconfig',

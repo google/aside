@@ -1,9 +1,9 @@
 {
   "name": "@google/aside",
-  "version": "1.1.1",
+  "version": "1.1.2",
   "type": "module",
   "description": "Apps Script IDE framework",
-  "bin": "build/src/cli.js",
+  "bin": "dist/src/cli.js",
   "files": [
     "build/src",
     ".claspignore",
@@ -25,15 +25,13 @@
   "main": "index.js",
   "scripts": {
     "clean": "rimraf build",
-    "lint": "eslint src/ && license-check-and-add check -f license-config.json",
-    "build:compile": "tsc",
-    "build": "npm run clean && npm run build:compile",
+    "lint": "npm run license:add && eslint --fix src/",
+    "build": "npm run clean && npm run license:add && tsc && npm run copy-files",
     "license": "license-check-and-add add -f license-config.json",
-    "test": "jest test/ --passWithNoTests --detectOpenHandles",
-    "build:bundle": "rollup --no-treeshake -c rollup.config.mjs",
+    "test": "jest test/ --detectOpenHandles",
     "license:check": "license-check-and-add check -f license-config.json",
     "license:add": "license-check-and-add add -f license-config.json",
-    "copy-files": "ncp .gitignore .gitignore-target",
+    "copy-files": "ncp .gitignore dist/.gitignore-target",
     "prepare": "is-ci || husky install"
   },
   "keywords": [
@@ -76,6 +74,7 @@
     "rimraf": "^4.4.0",
     "rollup": "^3.20.0",
     "ts-jest": "^29.0.5",
+    "tslib": "^2.5.0",
     "typescript": "^4.9.5"
   },
   "dependencies": {
@@ -88,6 +87,7 @@
     "prompts": "^2.4.2",
     "rollup-plugin-cleanup": "^3.2.1",
     "rollup-plugin-license": "^3.0.1",
+    "rollup-plugin-typescript2": "^0.34.1",
     "write-file-atomic": "^5.0.0"
   },
   "peerDependencies": {

@@ -13,37 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { nodeResolve } from '@rollup/plugin-node-resolve';
+import typescript from 'rollup-plugin-typescript2';
 import cleanup from 'rollup-plugin-cleanup';
 import license from 'rollup-plugin-license';
 import { fileURLToPath } from 'url';
 
-const extensions = ['.js'];
-
-const preventTreeShakingPlugin = () => {
-  return {
-    name: 'no-treeshaking',
-    resolveId(id, importer) {
-      if (!importer) {
-        // no treeshaking entry points, as we're not exporting anything
-        // in Apps Script files
-        return { id, moduleSideEffects: 'no-treeshake' };
-      }
-      return null;
-    },
-  };
-};
-
 export default {
-  input: './build/src/index.js',
+  input: 'src/index.ts',
   output: {
     dir: 'dist',
     format: 'esm',
   },
   plugins: [
-    preventTreeShakingPlugin(),
-    nodeResolve({ extensions }),
-    cleanup({ comments: 'none' }),
+    cleanup({ comments: 'none', extensions: ['.ts'] }),
     license({
       banner: {
         content: {
@@ -51,6 +33,7 @@ export default {
         },
       },
     }),
+    typescript(),
   ],
   context: 'this',
 };
