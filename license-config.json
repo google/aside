@@ -6,10 +6,10 @@
     ".gitignore",
     ".prettierignore",
     "*.txt",
+    ".github",
     "CONTRIBUTING",
     "build",
-    "dist",
-    "test"
+    "dist"
   ],
   "license": "license-header.txt",
   "licenseFormats": {
@@ -23,6 +23,11 @@
     "html|md": {
       "prepend": "<!--",
       "append": "-->"
+    },
+    "sh|^pre-commit": {
+      "eachLine": {
+        "prepend": "# "
+      }
     }
   },
   "trailingWhitespace": "TRIM"
