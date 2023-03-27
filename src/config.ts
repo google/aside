@@ -69,9 +69,9 @@ export const config: {
     'tsconfig.json': 'tsconfig.json',
   },
   filesMerge: {
+    'dist/.gitignore-target': '.gitignore',
     '.claspignore': '.claspignore',
     '.eslintignore': '.eslintignore',
-    '.gitignore-target': '.gitignore',
     '.prettierignore': '.prettierignore',
   },
 };
