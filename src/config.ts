@@ -25,7 +25,6 @@ export const config: {
 } = {
   dependencies: [
     '@google/clasp',
-    '@rollup/plugin-node-resolve',
     '@types/google-apps-script',
     '@types/jest',
     '@typescript-eslint/eslint-plugin',
@@ -41,6 +40,7 @@ export const config: {
     'rollup',
     'rollup-plugin-cleanup',
     'rollup-plugin-license',
+    'rollup-plugin-typescript2',
     'ts-jest',
     'typescript',
   ],

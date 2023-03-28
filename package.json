@@ -1,6 +1,6 @@
 {
   "name": "@google/aside",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "type": "module",
   "description": "Apps Script IDE framework",
   "bin": "dist/src/cli.js",
@@ -40,7 +40,7 @@
     "google"
   ],
   "engines": {
-    "node": ">=12"
+    "node": ">=14"
   },
   "author": "Google Inc.",
   "license": "Apache-2.0",
@@ -55,7 +55,6 @@
     "@types/prompts": "^2.4.3",
     "@types/write-file-atomic": "^4.0.0",
     "@typescript-eslint/eslint-plugin": "^5.55.0",
-    "copyfiles": "^2.4.1",
     "eslint": "^8.36.0",
     "eslint-config-prettier": "^8.7.0",
     "eslint-plugin-html": "^7.1.0",
@@ -74,7 +73,6 @@
     "typescript": "^4.9.5"
   },
   "dependencies": {
-    "@rollup/plugin-node-resolve": "^15.0.1",
     "chalk": "^5.2.0",
     "cross-spawn": "^7.0.3",
     "fs-extra": "^11.1.0",
