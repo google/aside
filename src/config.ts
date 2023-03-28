@@ -46,12 +46,11 @@ export const config: {
   ],
   scripts: {
     clean: 'rimraf build dist',
-    lint: 'npm run license:add && eslint --fix src/',
+    lint: 'npm run license && eslint --fix src/ test/',
     bundle: 'rollup --no-treeshake -c rollup.config.mjs',
     build: 'npm run clean && npm run bundle',
-    test: 'jest test/ --passWithNoTests',
-    'license:check': 'license-check-and-add check -f license-config.json',
-    'license:add': 'license-check-and-add add -f license-config.json',
+    license: 'license-check-and-add add -f license-config.json',
+    test: 'jest test/ --passWithNoTests --detectOpenHandles',
     deploy:
       'npm run lint && npm run test && npm run build && ncp appsscript.json dist/appsscript.json && ncp .clasp-dev.json .clasp.json && clasp push',
     'deploy-prod':
