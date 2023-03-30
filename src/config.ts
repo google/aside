@@ -52,9 +52,9 @@ export const config: {
     license: 'license-check-and-add add -f license-config.json',
     test: 'jest test/ --passWithNoTests --detectOpenHandles',
     deploy:
-      'npm run lint && npm run test && npm run build && ncp appsscript.json dist/appsscript.json && ncp .clasp-dev.json .clasp.json && clasp push',
+      'npm run lint && npm run test && npm run build && ncp appsscript.json dist/appsscript.json && ncp .clasp-dev.json .clasp.json && clasp push -f',
     'deploy-prod':
-      'npm run lint && npm run test && npm run build && ncp appsscript.json dist/appsscript.json && ncp .clasp-prod.json .clasp.json && clasp push',
+      'npm run lint && npm run test && npm run build && ncp appsscript.json dist/appsscript.json && ncp .clasp-prod.json .clasp.json && clasp push -f',
   },
   filesCopy: {
     '.editorconfig': '.editorconfig',
