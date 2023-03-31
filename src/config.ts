@@ -54,7 +54,7 @@ export const config: {
     deploy:
       'npm run lint && npm run test && npm run build && ncp appsscript.json dist/appsscript.json && ncp .clasp-dev.json .clasp.json && clasp push -f',
     'deploy-prod':
-      'npm run lint && npm run test && npm run build && ncp appsscript.json dist/appsscript.json && ncp .clasp-prod.json .clasp.json && clasp push -f',
+      'npm run lint && npm run test && npm run build && ncp appsscript.json dist/appsscript.json && ncp .clasp-prod.json .clasp.json && clasp push',
   },
   filesCopy: {
     '.editorconfig': '.editorconfig',
