@@ -53,7 +53,7 @@ export const config: {
     test: 'jest test/ --passWithNoTests --detectOpenHandles',
     deploy:
       'npm run lint && npm run test && npm run build && ncp appsscript.json dist/appsscript.json && ncp .clasp-dev.json .clasp.json && clasp push -f',
-    'deploy-prod':
+    'deploy:prod':
       'npm run lint && npm run test && npm run build && ncp appsscript.json dist/appsscript.json && ncp .clasp-prod.json .clasp.json && clasp push',
   },
   filesCopy: {
