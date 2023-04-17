@@ -15,17 +15,17 @@
  * limitations under the License.
  */
 
-import fs from 'fs-extra';
-import path from 'path';
-import writeFileAtomic from 'write-file-atomic';
-import { fileURLToPath } from 'url';
-import prompts from 'prompts';
 import chalk from 'chalk';
+import fs from 'fs-extra';
 import meow from 'meow';
+import path from 'path';
+import prompts from 'prompts';
+import { fileURLToPath } from 'url';
+import writeFileAtomic from 'write-file-atomic';
 
+import { ClaspHelper } from './clasp-helper.js';
 import { config } from './config.js';
 import { PackageHelper } from './package-helper.js';
-import { ClaspHelper } from './clasp-helper.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -78,39 +78,56 @@ export interface Options {
  * @param {Options} options
  */
 export async function handlePackageJson(options: Options) {
-  const pkgHelper = new PackageHelper();
+  let needsSave = false;
 
-  // Load package.json
-  const created = await pkgHelper.init(options.title, async () => {
-    return await query(
+  // Load or initialize a package.json
+  let packageJson = PackageHelper.load();
+  if (!packageJson) {
+    const init = await query(
       '',
       `Generate ${chalk.bold('package.json')}?`,
       true,
       options
     );
-  });
+    if (init) {
+      packageJson = PackageHelper.init(options.title);
+    } else {
+      packageJson = new PackageHelper({});
+    }
+    needsSave = true;
+  }
 
   // Synchronize scripts
   console.log(`${chalk.green('\u2714')}`, 'Adding scripts...');
-  const modified = await pkgHelper.updateScripts(
-    config.scripts,
-    async (scriptName: string, sourceScript: string, targetScript: string) => {
-      const message =
-        `package.json already has a script for ${chalk.bold(scriptName)}:\n` +
-        `-${chalk.red(sourceScript)}\n+${chalk.green(targetScript)}`;
-      return await query(message, 'Replace', false, options);
+  const existingScripts = packageJson.getScripts();
+  for (const [name, script] of Object.entries(config.scripts)) {
+    if (name in existingScripts) {
+      const update = await query(
+        `package.json already has a script for ${chalk.bold(name)}:\n` +
+          `-${chalk.red(existingScripts[name])}\n+${chalk.green(script)}`,
+        'Replace',
+        false,
+        options
+      );
+      if (update) {
+        packageJson.updateScript(name, script);
+        needsSave = true;
+      }
+    } else {
+      packageJson.updateScript(name, script);
+      needsSave = true;
     }
-  );
+  }
 
   // Write if changed
-  if (created || modified) {
+  if (needsSave) {
     console.log(`${chalk.green('\u2714')}`, 'Saving package.json...');
-    await pkgHelper.write();
+    await packageJson.save();
   }
 
   // Install dev dependencies
   console.log(`${chalk.green('\u2714')}`, 'Installing dependencies...');
-  await pkgHelper.installDependencies(config.dependencies);
+  packageJson.installPackages(config.dependencies);
 }
 
 /**
