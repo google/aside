@@ -1,4 +1,3 @@
-#!/usr/bin/env node
 /**
  * Copyright 2023 Google LLC
  *
@@ -14,180 +13,230 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-import fs from 'fs-extra';
-import writeFileAtomic from 'write-file-atomic';
-import { PackageJson } from 'type-fest';
 import spawn from 'cross-spawn';
+import fs from 'fs-extra';
+import { PackageJson } from 'type-fest';
+import writeFileAtomic from 'write-file-atomic';
+import { compare } from './compare';
+
+export interface PackageInstallResult {
+  requested: string[];
+  resolved: string[];
+  installed: string[];
+}
+
+/** The default package.json path in the current working directory. */
+export const DEFAULT_PACKAGE_JSON_PATH = './package.json';
+const DEFAULT_PACKAGE_JSON_CONTENT: PackageJson = {
+  name: '',
+  version: '0.0.0',
+  description: '',
+  main: 'build/index.js',
+  license: 'Apache-2.0',
+  keywords: [],
+  scripts: {},
+  engines: {
+    node: '>=12',
+  },
+};
+
+function toPackageName(name: string) {
+  return name
+    ?.replace(/([a-z])([A-Z])/g, '$1-$2')
+    .replace(/[\s_]+/g, '-')
+    .toLowerCase();
+}
 
 /**
- * Helper class to wrap clasp utilities.
+ * A collection of utilities for interacting with package.json files.
  */
 export class PackageHelper {
-  private packageJson: PackageJson = {};
-  private readonly defaultPackageJson: PackageJson = {
-    name: '',
-    version: '0.0.0',
-    description: '',
-    main: 'build/index.js',
-    license: 'Apache-2.0',
-    keywords: [],
-    scripts: {},
-    engines: {
-      node: '>=12',
-    },
-  };
+  constructor(
+    private content: PackageJson = {},
+    private readonly path = DEFAULT_PACKAGE_JSON_PATH
+  ) {}
 
   /**
-   * Set packageJson from existing package.json or generate a default one.
-   *
-   * @param {string} name
-   * @param {function} createCallback
-   * @returns {Promise<boolean>}
+   * Returns a snapshot of the currently loaded package.json.
+   * @returns {PackageJson} the package.json content
    */
-  async init(
-    name: string,
-    createCallback: () => Promise<boolean>
-  ): Promise<boolean> {
-    this.packageJson = this.load() ?? ({} as PackageJson);
-
-    if (
-      Object.keys(this.packageJson).length === 0 &&
-      (await createCallback())
-    ) {
-      this.packageJson = this.defaultPackageJson;
-      this.packageJson.name = this.toValidName(name);
-
-      return true;
-    }
-
-    return false;
+  getContent() {
+    return JSON.parse(JSON.stringify(this.content)) as PackageJson;
   }
 
   /**
-   * Load package.json.
-   *
-   * @returns {PackageJson | undefined}
+   * Returns the package.json's package name
+   * @returns {string} the name of the current package
    */
-  load(): PackageJson | undefined {
-    try {
-      return fs.readJsonSync('./package.json');
-    } catch (e) {
-      const err = e as Error & { code?: string };
-
-      if (err.code !== 'ENOENT') {
-        throw new Error(`Unable to open package.json file: ${err.message}`);
-      }
-    }
+  getName() {
+    return this.content.name;
   }
 
   /**
-   * Convert input string to lowercase-dashed-string.
-   *
-   * @param {string} name
-   * @returns {string | undefined}
-   */
-  toValidName(name?: string): string | undefined {
-    return name
-      ?.replace(/([a-z])([A-Z])/g, '$1-$2')
-      .replace(/[\s_]+/g, '-')
-      .toLowerCase();
-  }
-
-  /**
-   * Write package.json to filesystem.
-   */
-  async write() {
-    await writeFileAtomic(
-      './package.json',
-      `${JSON.stringify(this.packageJson, null, '  ')}\n`
-    );
-  }
-
-  /**
-   * Get package.json scripts.
-   *
-   * @returns {PackageJson.Scripts}
+   * Returns a snapshot of the package.json's script section.
+   * @returns {PackageJson.Scripts} the scripts of the current package
    */
   getScripts(): PackageJson.Scripts {
-    return this.packageJson.scripts ?? {};
+    return this.getContent().scripts ?? {};
   }
 
   /**
-   * Determine and return missing dependencies from set of target dependencies.
+   * Returns a snapshot of the package.json's dependency section.
    *
-   * @param {string[]} targetDependencies
-   * @returns {string[]}
+   * Specify the includeDevDependencies flag in order to retrieve a merge of
+   * the dependencies and development dependencies.
+   *
+   * @param {boolean} [includeDevDependencies=false] whether to include
+   *  devDependencies
+   * @returns {PackageJson.Dependency} the dependencies of the current package
    */
-  getMissingDependencies(targetDependencies: string[]): string[] {
-    const installedDependencies = [
-      ...Object.keys(this.packageJson.dependencies ?? {}),
-      ...Object.keys(this.packageJson.devDependencies ?? {}),
-    ];
-    return this.packageJson.dependencies !== undefined
-      ? targetDependencies.filter(dep => !installedDependencies.includes(dep))
-      : targetDependencies;
+  getDependencies(includeDevDependencies = false): PackageJson.Dependency {
+    const content = this.getContent();
+    const dependencies = content.dependencies ?? {};
+    if (includeDevDependencies) {
+      return { ...dependencies, ...content.devDependencies };
+    }
+    return dependencies;
   }
 
   /**
-   * Install dependencies from list.
+   * Returns a snapshot of the package.json's dependency package names.
    *
-   * @param {string[]} deps
-   * @returns {Promise<boolean>} Indicating whether dependencies were installed
+   * Specify the includeDevDependencies flag in order to retrieve a merge of
+   * the dependency and development dependency package names.
+   *
+   * @param {boolean} [includeDevDependencies=false] whether to include
+   *  devDependencies
+   * @returns {string[]} the dependency package names
    */
-  async installDependencies(deps: string[]): Promise<boolean> {
-    const missingDependencies = this.getMissingDependencies(deps);
+  getDependencyPackages(includeDevDependencies = false): string[] {
+    return Object.keys(this.getDependencies(includeDevDependencies));
+  }
 
-    if (missingDependencies.length === 0) return false;
+  /**
+   * Updates the name of the current package.
+   *
+   * This function reformats the input name into a valid package name (i.e.
+   * lower-case-dashed format) and returns the valid package name.
+   *
+   * @param {string} name the new name of the package
+   * @returns {string} the reformatted package name
+   */
+  updateName(name: string): string {
+    return (this.content.name = toPackageName(name));
+  }
 
-    const res = spawn.sync(
+  /**
+   * Updates a single script entry in the current package.
+   *
+   * @param {string} name the name of the script.
+   * @param {string} script the script content.
+   * @returns {PackageJson.Scripts} a snapshot of the updated scripts section.
+   */
+  updateScript(name: string, script: string): PackageJson.Scripts {
+    if (!this.content.scripts) {
+      this.content.scripts = {};
+    }
+    this.content.scripts = { ...this.getScripts(), [name]: script };
+    return this.getScripts();
+  }
+
+  /**
+   * Installs a list of packages at their current version.
+   *
+   * Note this function computes the missing packages and only installs those.
+   * The function returns an install result containing information, which
+   * packages were requested, which ones already existed and which ones were
+   * installed.
+   *
+   * @param {string[]} packages the packages to install.
+   * @returns {PackageInstallResult} information about the installation.
+   */
+  installPackages(packages: string[]): PackageInstallResult {
+    const packagesToInstall = compare(
+      this.getDependencyPackages(true),
+      packages
+    ).right;
+
+    if (packagesToInstall.length === 0) {
+      return {
+        requested: packages,
+        resolved: packages,
+        installed: [],
+      };
+    }
+
+    const executionResult = spawn.sync(
       'npm',
-      ['install', '--ignore-scripts', '--silent'].concat(deps),
+      ['install', '--ignore-scripts', '--silent'].concat(packagesToInstall),
       { encoding: 'utf-8' }
     );
-
-    if (res.stderr) {
-      throw new Error(res.stderr);
+    if (executionResult.stderr) {
+      throw new Error(executionResult.stderr);
     }
 
-    return true;
+    // sync with new saved dependencies after install
+    const packageJsonOnDisk = PackageHelper.load(this.path);
+    if (!packageJsonOnDisk) {
+      throw new Error('Cannot find package.json');
+    }
+    const packageDiff = compare(
+      this.getDependencyPackages(true),
+      packageJsonOnDisk.getDependencyPackages(true)
+    );
+    this.content = packageJsonOnDisk.getContent();
+    return {
+      requested: packages,
+      resolved: packageDiff.both,
+      installed: packageDiff.right,
+    };
   }
 
   /**
-   * Update scripts.
-   *
-   * @param {PackageJson.Scripts} targetScripts
-   * @param {function} existsCallback
-   * @returns {Promise<boolean>} Indicating if scripts were modified
+   * Writes the package.json to disk.
+   * @returns {Promise<PackageHelper>} this package helper.
    */
-  async updateScripts(
-    targetScripts: PackageJson.Scripts,
-    existsCallback: (
-      scriptName: string,
-      sourceScript: string,
-      targetScript: string
-    ) => Promise<boolean>
-  ): Promise<boolean> {
-    if (!this.packageJson.scripts) {
-      this.packageJson.scripts = {};
-    }
+  async save(): Promise<PackageHelper> {
+    await writeFileAtomic(
+      this.path,
+      `${JSON.stringify(this.content, null, '  ')}\n`
+    );
+    return this;
+  }
 
-    let modified = false;
-
-    for (const scriptName of Object.keys(targetScripts)) {
-      const source = this.packageJson.scripts[scriptName];
-      const target = targetScripts[scriptName];
-
-      if (source && target && source !== target) {
-        const install = await existsCallback(scriptName, source, target);
-
-        if (!install) continue;
+  /**
+   * Loads the contents of a package.json from the current directory.
+   * @returns {PackageHelper|undefined} a package helper with the current package.json
+   *  information.
+   */
+  static load(path = DEFAULT_PACKAGE_JSON_PATH): PackageHelper | undefined {
+    try {
+      return new PackageHelper(fs.readJsonSync(path), path);
+    } catch (e) {
+      if (e instanceof Error && 'code' in e && e.code === 'ENOENT') {
+        return undefined;
+      } else {
+        // unexpected error
+        throw e;
       }
-
-      this.packageJson.scripts[scriptName] = target;
-      modified = true;
     }
+  }
 
-    return modified;
+  /**
+   * Initializes a package.json with default values.
+   * @param {string} name the package name
+   * @param {string} [path] optionally, a path different from the default
+   *  package.json path.
+   * @returns {PackageHelper} a package helper with the current package.json
+   *  information.
+   */
+  static init(name: string, path = DEFAULT_PACKAGE_JSON_PATH) {
+    return new PackageHelper(
+      {
+        ...DEFAULT_PACKAGE_JSON_CONTENT,
+        name: toPackageName(name),
+      },
+      path
+    );
   }
 }

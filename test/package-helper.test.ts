@@ -13,25 +13,26 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import * as fs from 'fs-extra';
-import spawn from 'cross-spawn';
-import { PackageHelper } from '../src/package-helper';
 import { SpawnSyncReturns } from 'child_process';
+import spawn from 'cross-spawn';
+import * as fs from 'fs-extra';
+import { PackageHelper } from '../src/package-helper';
 
 jest.mock('fs-extra');
 
 describe('package-helper', () => {
   describe('load', () => {
-    const pkgHelper = new PackageHelper();
-
+    //const pkgHelper = new PackageHelper();
     it('returns undefined if no package.json found', () => {
       jest.spyOn(fs, 'readJsonSync').mockImplementationOnce(() => {
-        throw { code: 'ENOENT' };
+        const err: NodeJS.ErrnoException = new Error('file not found');
+        err.code = 'ENOENT';
+        throw err;
       });
 
-      const res = pkgHelper.load();
+      const pkgHelper = PackageHelper.load();
 
-      expect(res).toBe(undefined);
+      expect(pkgHelper).toBe(undefined);
     });
 
     it('returns package.json if found', () => {
@@ -43,71 +44,94 @@ describe('package-helper', () => {
         return expected;
       });
 
-      const res = pkgHelper.load();
+      const pkgHelper = PackageHelper.load();
+      expect(pkgHelper).not.toBe(undefined);
+      expect(pkgHelper!.getContent()).toEqual(expected);
+    });
 
-      expect(res).toBe(expected);
+    it('throws an error for unexpected exceptions', () => {
+      jest.spyOn(fs, 'readJsonSync').mockImplementationOnce(() => {
+        throw new Error();
+      });
+
+      expect(PackageHelper.load).toThrow();
     });
   });
 
   describe('init', () => {
-    const pkgHelper = new PackageHelper();
-
     it('uses default package if no package.json found', async () => {
-      jest.spyOn(pkgHelper, 'load').mockReturnValue(undefined);
+      jest.spyOn(PackageHelper, 'load').mockReturnValue(undefined);
 
-      const res = await pkgHelper.init('test', async () => {
-        return true;
+      const res = PackageHelper.init('test');
+
+      expect(res.getContent()).toEqual({
+        name: 'test',
+        version: '0.0.0',
+        description: '',
+        main: 'build/index.js',
+        license: 'Apache-2.0',
+        keywords: [],
+        scripts: {},
+        engines: {
+          node: '>=12',
+        },
       });
-
-      expect(res).toBe(true);
-    });
-
-    it('uses existing package if package.json found', async () => {
-      const expected = {
-        name: 'project',
-      };
-
-      jest.spyOn(pkgHelper, 'load').mockReturnValue(expected);
-
-      const res = await pkgHelper.init('test', async () => {
-        return true;
-      });
-
-      expect(pkgHelper['packageJson']).toEqual(expected);
-      expect(res).toBe(false);
     });
   });
 
-  describe('toValidName', () => {
+  describe('getContent', () => {
+    it('returns the current package.json contents', () => {
+      const content = { name: 'test', main: 'index.js' };
+      const pkgHelper = new PackageHelper(content);
+
+      expect(pkgHelper.getContent()).toEqual(content);
+    });
+    it('returns a copy of the current package.json content', () => {
+      const content = { name: 'test', main: 'index.js' };
+      const pkgHelper = new PackageHelper(content);
+
+      const pkgContent = pkgHelper.getContent();
+      pkgContent.name = 'test1234';
+
+      expect(pkgHelper.getContent().name).toEqual('test');
+    });
+  });
+
+  describe('getName', () => {
+    it('returns the current package name', () => {
+      const pkgHelper = new PackageHelper({ name: 'test' });
+
+      expect(pkgHelper.getName()).toBe('test');
+    });
+  });
+
+  describe('updateName', () => {
     const pkgHelper = new PackageHelper();
 
     it('converts string to valid name', () => {
-      const res = pkgHelper.toValidName('Some CoolTitle Here');
+      const res = pkgHelper.updateName('Some CoolTitle Here');
 
       expect(res).toEqual('some-cool-title-here');
     });
   });
 
   describe('getScripts', () => {
-    const pkgHelper = new PackageHelper();
-
     it('returns empty object if no scripts', () => {
-      pkgHelper['packageJson'] = {};
+      const pkgHelper = new PackageHelper();
 
       const scripts = pkgHelper.getScripts();
 
       expect(scripts).toEqual({});
     });
 
-    it('returns empty object if no scripts', () => {
+    it('returns an object if scripts are defined', () => {
       const pkg = {
         name: 'test',
         scripts: {
           test: 'some script',
         },
       };
-
-      pkgHelper['packageJson'] = pkg;
+      const pkgHelper = new PackageHelper(pkg);
 
       const scripts = pkgHelper.getScripts();
 
@@ -115,171 +139,140 @@ describe('package-helper', () => {
     });
   });
 
-  describe('getMissingDependencies', () => {
-    const pkgHelper = new PackageHelper();
+  describe('updateScript', () => {
+    it('adds a non-existent script', () => {
+      const pkgHelper = new PackageHelper({ scripts: { a: 'test' } });
 
-    it('returns target dependencies if no dependencies', () => {
-      const pkg = {};
-      const targetDependencies = ['pkg1', 'pkg2'];
+      pkgHelper.updateScript('b', 'test');
+      const newScripts = pkgHelper.getScripts();
 
-      pkgHelper['packageJson'] = pkg;
-
-      const res = pkgHelper.getMissingDependencies(targetDependencies);
-
-      expect(res).toEqual(targetDependencies);
+      expect(newScripts['b']).toEqual('test');
     });
+    it('overwrites an existing script', () => {
+      const pkgHelper = new PackageHelper({ scripts: { a: 'test' } });
 
-    it('returns missing dependencies', () => {
-      const pkg = {
-        dependencies: {
-          pkg1: 'v1',
-        },
-      };
-      const targetDependencies = ['pkg1', 'pkg2'];
+      pkgHelper.updateScript('a', 'test1234');
+      const newScripts = pkgHelper.getScripts();
 
-      pkgHelper['packageJson'] = pkg;
-
-      const res = pkgHelper.getMissingDependencies(targetDependencies);
-
-      expect(res).toEqual(['pkg2']);
-    });
-
-    it('returns no missing dependencies if all installed', () => {
-      const pkg = {
-        dependencies: {
-          pkg1: 'v1',
-          pkg2: 'v2',
-        },
-      };
-      const targetDependencies = ['pkg1', 'pkg2'];
-
-      pkgHelper['packageJson'] = pkg;
-
-      const res = pkgHelper.getMissingDependencies(targetDependencies);
-
-      expect(res).toEqual([]);
-    });
-
-    it('returns no missing dependencies if all installed in dep and devDep', () => {
-      const pkg = {
-        dependencies: {
-          pkg1: 'v1',
-        },
-        devDependencies: {
-          pkg2: 'v2',
-        },
-      };
-      const targetDependencies = ['pkg1', 'pkg2'];
-
-      pkgHelper['packageJson'] = pkg;
-
-      const res = pkgHelper.getMissingDependencies(targetDependencies);
-
-      expect(res).toEqual([]);
+      expect(newScripts['a']).toEqual('test1234');
     });
   });
 
   describe('installDependencies', () => {
-    const pkgHelper = new PackageHelper();
+    const spawnSuccessResult = {
+      stderr: '',
+    } as SpawnSyncReturns<string>;
+    beforeEach(() => {
+      jest.resetAllMocks();
+    });
 
     it('installs dependencies', async () => {
-      jest
-        .spyOn(pkgHelper, 'getMissingDependencies')
-        .mockReturnValue(['pkg1', 'pkg2']);
+      const pkgBeforeInstall = {};
+      const pkgAfterInstall = {
+        dependencies: { pkg1: '=0.0.1', pkg2: '=0.0.1' },
+      };
 
       const spawnSyncSpy = jest
         .spyOn(spawn, 'sync')
-        .mockImplementationOnce(() => {
-          return {
-            stderr: '',
-          } as unknown as SpawnSyncReturns<string>;
-        });
+        .mockImplementationOnce(() => spawnSuccessResult);
+      const loadSpy = jest
+        .spyOn(PackageHelper, 'load')
+        .mockImplementationOnce(() => new PackageHelper(pkgAfterInstall));
+      const pkgHelper = new PackageHelper(pkgBeforeInstall);
 
-      const res = await pkgHelper.installDependencies(['pkg1', 'pkg2']);
+      const result = pkgHelper.installPackages(['pkg1', 'pkg2']);
 
       expect(spawnSyncSpy).toHaveBeenCalledWith(
         'npm',
         ['install', '--ignore-scripts', '--silent', 'pkg1', 'pkg2'],
         { encoding: 'utf-8' }
       );
-      expect(res).toBe(true);
-    });
-  });
-
-  describe('updateScripts', () => {
-    const pkgHelper = new PackageHelper();
-
-    it('no override if all scripts exist and --no', async () => {
-      const targetScripts = {
-        test: 'run test',
-        lint: 'run lint',
-      };
-
-      const pkg = {
-        scripts: {
-          test: 'run test 1',
-          lint: 'run lint 1',
-        },
-      };
-
-      pkgHelper['packageJson'] = pkg;
-
-      const res = await pkgHelper.updateScripts(targetScripts, async () => {
-        return false;
+      expect(loadSpy).toHaveBeenCalled();
+      expect(result).toEqual({
+        requested: ['pkg1', 'pkg2'],
+        installed: ['pkg1', 'pkg2'],
+        resolved: [],
       });
-
-      expect(pkgHelper['packageJson']).toEqual(pkg);
-      expect(res).toBe(false);
     });
 
-    it('partial update if some scripts exist and --no', async () => {
-      const targetScripts = {
-        test: 'run test',
-        lint: 'run lint',
+    it('only install missing dependencies', () => {
+      const pkgBeforeInstall = {
+        dependencies: { pkg1: '=0.0.1' },
       };
-
-      const pkg = {
-        scripts: {
-          test: 'run test 1',
-        },
+      const pkgAfterInstall = {
+        dependencies: { pkg1: '=0.0.1', pkg2: '=0.0.1' },
       };
+      const spawnSyncSpy = jest
+        .spyOn(spawn, 'sync')
+        .mockImplementationOnce(() => spawnSuccessResult);
+      const loadSpy = jest
+        .spyOn(PackageHelper, 'load')
+        .mockImplementationOnce(() => new PackageHelper(pkgAfterInstall));
+      const pkgHelper = new PackageHelper(pkgBeforeInstall);
 
-      pkgHelper['packageJson'] = pkg;
+      const result = pkgHelper.installPackages(['pkg1', 'pkg2']);
 
-      const res = await pkgHelper.updateScripts(targetScripts, async () => {
-        return false;
+      expect(spawnSyncSpy).toHaveBeenCalledWith(
+        'npm',
+        ['install', '--ignore-scripts', '--silent', 'pkg2'],
+        { encoding: 'utf-8' }
+      );
+      expect(loadSpy).toHaveBeenCalled();
+      expect(result).toEqual({
+        requested: ['pkg1', 'pkg2'],
+        installed: ['pkg2'],
+        resolved: ['pkg1'],
       });
-
-      expect(pkgHelper['packageJson']).toEqual({
-        scripts: {
-          test: 'run test 1',
-          lint: 'run lint',
-        },
-      });
-      expect(res).toBe(true);
     });
 
-    it('override all scripts if --yes', async () => {
-      const targetScripts = {
-        test: 'run test',
-        lint: 'run lint',
+    it('only install packages that are not in devDependencies', () => {
+      const pkgBeforeInstall = {
+        dependencies: { pkg1: '=0.0.1' },
+        devDependencies: { pkg2: '=0.0.1' },
       };
-
-      const pkg = {
-        scripts: {
-          test: 'run test 1',
-          lint: 'run lint 1',
-        },
+      const pkgAfterInstall = {
+        dependencies: { pkg1: '=0.0.1', pkg3: '=0.0.1' },
+        devDependencies: { pkg2: '=0.0.1' },
       };
+      const spawnSyncSpy = jest
+        .spyOn(spawn, 'sync')
+        .mockImplementationOnce(() => spawnSuccessResult);
+      const loadSpy = jest
+        .spyOn(PackageHelper, 'load')
+        .mockImplementationOnce(() => new PackageHelper(pkgAfterInstall));
+      const pkgHelper = new PackageHelper(pkgBeforeInstall);
 
-      pkgHelper['packageJson'] = pkg;
+      const result = pkgHelper.installPackages(['pkg1', 'pkg2', 'pkg3']);
 
-      const res = await pkgHelper.updateScripts(targetScripts, async () => {
-        return true;
+      expect(spawnSyncSpy).toHaveBeenCalledWith(
+        'npm',
+        ['install', '--ignore-scripts', '--silent', 'pkg3'],
+        { encoding: 'utf-8' }
+      );
+      expect(loadSpy).toHaveBeenCalled();
+      expect(result).toEqual({
+        requested: ['pkg1', 'pkg2', 'pkg3'],
+        installed: ['pkg3'],
+        resolved: ['pkg1', 'pkg2'],
+      });
+    });
+
+    it('does not install anything if everything is already installed', () => {
+      const spawnSyncSpy = jest
+        .spyOn(spawn, 'sync')
+        .mockImplementationOnce(() => spawnSuccessResult);
+      const pkgHelper = new PackageHelper({
+        dependencies: { pkg1: '=0.0.1' },
+        devDependencies: { pkg2: '=0.0.1' },
       });
 
-      expect(pkgHelper['packageJson']).toEqual({ scripts: targetScripts });
-      expect(res).toBe(true);
+      const result = pkgHelper.installPackages(['pkg1', 'pkg2']);
+      expect(spawnSyncSpy).not.toHaveBeenCalled();
+      expect(result).toEqual({
+        requested: ['pkg1', 'pkg2'],
+        installed: [],
+        resolved: ['pkg1', 'pkg2'],
+      });
     });
   });
 });
