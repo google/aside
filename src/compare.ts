@@ -13,32 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-/**
- * Small wrapper for lazily producing values.
- * @template T the value type.
- */
-class Lazy<T> {
-  private calculatedValue?: T;
-  private hasCalculatedValue: boolean = false;
-
-  /**
-   * Returns the value or calculates it if none has yet been calculated.
-   * @returns {T} the value.
-   */
-  get value(): T {
-    if (!this.hasCalculatedValue) {
-      this.calculatedValue = this.calculate();
-      this.hasCalculatedValue = true;
-    }
-    return <T>this.calculatedValue;
-  }
-
-  /**
-   * Creates a new cached value wrapper.
-   * @param {function(): T} calculate the function to produce the value.
-   */
-  constructor(private readonly calculate: () => T) {}
-}
 
 /**
  * A comparision entry holding an element and the element's set membership.
@@ -73,60 +47,32 @@ class SetComparison<T> {
    */
   readonly entries: ComparisonEntry<T>[];
 
-  private cachedLeft = new Lazy<T[]>(() =>
-    this.entries
-      .filter(entry => entry.left && !entry.right)
-      .map(entry => entry.element)
-  );
-  private cachedRight = new Lazy<T[]>(() =>
-    this.entries
-      .filter(entry => entry.right && !entry.left)
-      .map(entry => entry.element)
-  );
-  private cachedBoth = new Lazy<T[]>(() =>
-    this.entries
-      .filter(entry => entry.left && entry.right)
-      .map(entry => entry.element)
-  );
-
   /**
    * The elements that are only in the left input.
    * @type {T}
    */
   get left() {
-    return this.cachedLeft.value;
+    return this.entries
+      .filter(entry => entry.left && !entry.right)
+      .map(entry => entry.element);
   }
   /**
    * The elements that are only in the right input.
    * @type {T}
    */
   get right() {
-    return this.cachedRight.value;
+    return this.entries
+      .filter(entry => entry.right && !entry.left)
+      .map(entry => entry.element);
   }
   /**
    * The set intersection of the inputs.
    * @type {T}
    */
   get both() {
-    return this.cachedBoth.value;
-  }
-
-  /**
-   * Adds an element and it's set membership to this comparison.
-   * @param {T} element the element.
-   * @param {boolean} left whether this element belongs to the left input.
-   * @param {boolean} right whether this element belongs to the right input.
-   */
-  private addElement(element: T, left: boolean, right: boolean) {
-    this.addEntry({ element, left, right });
-  }
-
-  /**
-   * Adds a comparision entry to this comparison.
-   * @param {ComparisonEntry<T>} entry the entry.
-   */
-  private addEntry(entry: ComparisonEntry<T>) {
-    this.entries.push(entry);
+    return this.entries
+      .filter(entry => entry.left && entry.right)
+      .map(entry => entry.element);
   }
 
   /**
@@ -151,11 +97,11 @@ class SetComparison<T> {
     const union = new Set<T>([...leftSet, ...rightSet]);
     const comparison = new SetComparison<T>();
     for (const element of union) {
-      comparison.addElement(
+      comparison.entries.push({
         element,
-        leftSet.has(element),
-        rightSet.has(element)
-      );
+        left: leftSet.has(element),
+        right: rightSet.has(element),
+      });
     }
     return comparison;
   }
