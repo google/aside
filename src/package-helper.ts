@@ -40,6 +40,11 @@ const DEFAULT_PACKAGE_JSON_CONTENT: PackageJson = {
   },
 };
 
+/**
+ * Reformats an arbitrary string into a lower-case-dashed package name.
+ * @param {string} name the project name
+ * @returns {string} the reformatted package name
+ */
 function toPackageName(name: string) {
   return name
     ?.replace(/([a-z])([A-Z])/g, '$1-$2')

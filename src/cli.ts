@@ -92,7 +92,7 @@ export async function handlePackageJson(options: Options) {
     if (init) {
       packageJson = PackageHelper.init(options.title);
     } else {
-      packageJson = new PackageHelper({});
+      packageJson = new PackageHelper();
     }
     needsSave = true;
   }
@@ -102,14 +102,14 @@ export async function handlePackageJson(options: Options) {
   const existingScripts = packageJson.getScripts();
   for (const [name, script] of Object.entries(config.scripts)) {
     if (name in existingScripts) {
-      const update = await query(
+      const replace = await query(
         `package.json already has a script for ${chalk.bold(name)}:\n` +
           `-${chalk.red(existingScripts[name])}\n+${chalk.green(script)}`,
         'Replace',
         false,
         options
       );
-      if (update) {
+      if (replace) {
         packageJson.updateScript(name, script);
         needsSave = true;
       }
