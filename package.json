@@ -1,6 +1,6 @@
 {
   "name": "@google/aside",
-  "version": "1.2.3",
+  "version": "1.2.4",
   "type": "module",
   "description": "Apps Script IDE framework",
   "bin": "dist/src/cli.js",
@@ -45,7 +45,6 @@
   "author": "Google Inc.",
   "license": "Apache-2.0",
   "devDependencies": {
-    "@google/clasp": "^2.4.2",
     "@rollup/plugin-commonjs": "^24.0.1",
     "@types/cross-spawn": "^6.0.2",
     "@types/fs-extra": "^11.0.1",
