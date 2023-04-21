@@ -45,13 +45,13 @@ export const config: {
     'typescript',
   ],
   scripts: {
-    clean: 'rimraf build dist',
-    lint: 'npm run license && eslint --fix src/ test/',
-    bundle: 'rollup --no-treeshake -c rollup.config.mjs',
-    build: 'npm run clean && npm run bundle',
-    license: 'license-check-and-add add -f license-config.json',
-    test: 'jest test/ --passWithNoTests --detectOpenHandles',
-    deploy:
+    'clean': 'rimraf build dist',
+    'lint': 'npm run license && eslint --fix src/ test/',
+    'bundle': 'rollup --no-treeshake -c rollup.config.mjs',
+    'build': 'npm run clean && npm run bundle',
+    'license': 'license-check-and-add add -f license-config.json',
+    'test': 'jest test/ --passWithNoTests --detectOpenHandles',
+    'deploy':
       'npm run lint && npm run test && npm run build && ncp appsscript.json dist/appsscript.json && ncp .clasp-dev.json .clasp.json && clasp push -f',
     'deploy:prod':
       'npm run lint && npm run test && npm run build && ncp appsscript.json dist/appsscript.json && ncp .clasp-prod.json .clasp.json && clasp push',
@@ -61,7 +61,7 @@ export const config: {
     '.eslintrc.json': '.eslintrc.json',
     '.prettierrc.json': '.prettierrc.json',
     'jest.config.json': 'jest.config.json',
-    LICENSE: 'LICENSE',
+    'LICENSE': 'LICENSE',
     'license-config.json': 'license-config.json',
     'license-header.txt': 'license-header.txt',
     'rollup.config.mjs': 'rollup.config.mjs',
