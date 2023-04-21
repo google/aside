@@ -17,7 +17,7 @@ import spawn from 'cross-spawn';
 import fs from 'fs-extra';
 import { PackageJson } from 'type-fest';
 import writeFileAtomic from 'write-file-atomic';
-import { compare } from './compare';
+import { compare } from './compare.js';
 
 export interface PackageInstallResult {
   requested: string[];
