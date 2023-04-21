@@ -2,5 +2,8 @@
   "preset": "ts-jest",
   "testEnvironment": "node",
   "modulePathIgnorePatterns": ["<rootDir>/dist/", "<rootDir>/build/"],
-  "testPathIgnorePatterns": ["<rootDir>/dist/", "<rootDir>/build/"]
+  "testPathIgnorePatterns": ["<rootDir>/dist/", "<rootDir>/build/"],
+  "moduleNameMapper": {
+    "(.+)\\.js": "$1"
+  }
 }
