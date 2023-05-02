@@ -294,7 +294,7 @@ async function handleConfigCopy(options: Options) {
 export async function handleTemplate() {
   const cwd = process.cwd();
   const sourceDirName = path.join(__dirname, '../../template');
-  const targetDirName = path.join(cwd, 'src');
+  const targetDirName = cwd;
 
   try {
     fs.mkdirSync(targetDirName);
