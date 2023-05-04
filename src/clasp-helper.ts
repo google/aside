@@ -167,13 +167,17 @@ export class ClaspHelper {
   ) {
     await this.clean(rootDir);
 
-    this.writeConfig(scriptIdDev, rootDir);
+    // Write .clasp.json
+    await this.writeConfig(scriptIdDev, rootDir);
+
+    // Copy .clasp.json to clasp root dir
+    await fs.copyFile('.clasp.json', path.join(rootDir, '.clasp.json'));
 
     spawn.sync('npx', ['clasp', 'clone'], { stdio: 'inherit' });
-
     spawn.sync('npx', ['clasp', 'pull'], { stdio: 'inherit' });
 
-    this.arrangeFiles(rootDir, scriptIdProd);
+    // Copy/Move files to their designated place
+    await this.arrangeFiles(rootDir, scriptIdProd);
   }
 
   /**
