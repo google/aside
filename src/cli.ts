@@ -101,7 +101,7 @@ export async function handlePackageJson(options: Options) {
   console.log(`${chalk.green('\u2714')}`, 'Adding scripts...');
   const existingScripts = packageJson.getScripts();
   for (const [name, script] of Object.entries(config.scripts)) {
-    if (name in existingScripts) {
+    if (name in existingScripts && existingScripts[name] !== script) {
       const replace = await query(
         `package.json already has a script for ${chalk.bold(name)}:\n` +
           `-${chalk.red(existingScripts[name])}\n+${chalk.green(script)}`,
