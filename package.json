@@ -1,6 +1,6 @@
 {
   "name": "@google/aside",
-  "version": "1.2.6",
+  "version": "1.3.0",
   "type": "module",
   "description": "Apps Script IDE framework",
   "bin": "dist/src/cli.js",
