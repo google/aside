@@ -289,31 +289,33 @@ async function handleConfigCopy(options: Options) {
 }
 
 /**
- * Copy template if no .ts files in src/.
+ * Handle putting template files in place.
  */
-export async function handleTemplate() {
+async function handleTemplate() {
   const cwd = process.cwd();
-  const sourceDirName = path.join(__dirname, '../../template');
-  const targetDirName = path.join(cwd, 'src');
+  const templates = path.join(__dirname, '../../template');
 
-  try {
-    fs.mkdirSync(targetDirName);
-  } catch (e) {
-    const err = e as Error & { code?: string };
-    if (err.code !== 'EEXIST') {
-      throw err;
+  const items = await fs.readdir(templates);
+
+  for (const item of items) {
+    const targetDirName = path.join(cwd, item);
+
+    // Create folder
+    fs.mkdirSync(targetDirName, { recursive: true });
+
+    // Only install the template if no ts files exist in target directory.
+    const files = fs.readdirSync(targetDirName);
+    const tsFiles = files.filter((file: string) =>
+      file.toLowerCase().endsWith('.ts')
+    );
+
+    // Copy files
+    if (tsFiles.length === 0) {
+      console.log(`${chalk.green('\u2714')}`, `Installing ${item} template...`);
+      await fs.copy(path.join(templates, item), targetDirName, {
+        overwrite: false,
+      });
     }
-  }
-
-  // Only install the template if no ts files exist in target directory.
-  const files = fs.readdirSync(targetDirName);
-  const tsFiles = files.filter((file: string) =>
-    file.toLowerCase().endsWith('.ts')
-  );
-
-  if (tsFiles.length === 0) {
-    console.log(`${chalk.green('\u2714')}`, 'Installing default template...');
-    fs.copySync(sourceDirName, targetDirName, { overwrite: false });
   }
 }
 

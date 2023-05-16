@@ -46,7 +46,8 @@ export const config: {
   ],
   scripts: {
     'clean': 'rimraf build dist',
-    'lint': 'npm run license && eslint --fix src/ test/',
+    'lint':
+      'npm run license && eslint --fix --no-error-on-unmatched-pattern src/ test/',
     'bundle': 'rollup --no-treeshake -c rollup.config.mjs',
     'build': 'npm run clean && npm run bundle',
     'license': 'license-check-and-add add -f license-config.json',
