@@ -192,7 +192,11 @@ describe('clasp-helper', () => {
 
       await claspHelper.arrangeFiles('rootDir', 'abc123');
 
-      expect(writeConfigSpy).toHaveBeenCalledWith('abc123', '.clasp-prod.json');
+      expect(writeConfigSpy).toHaveBeenCalledWith(
+        'abc123',
+        'rootDir',
+        '.clasp-prod.json'
+      );
     });
   });
 
