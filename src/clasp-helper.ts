@@ -148,7 +148,7 @@ export class ClaspHelper {
     await fs.move(path.join(rootDir, 'appsscript.json'), 'appsscript.json');
 
     if (scriptIdProd) {
-      this.writeConfig(scriptIdProd, '.clasp-prod.json');
+      this.writeConfig(scriptIdProd, rootDir, '.clasp-prod.json');
     } else {
       await fs.copyFile('.clasp-dev.json', '.clasp-prod.json');
     }
