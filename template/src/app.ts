@@ -13,8 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { app } from './app';
 
-app;
-
-console.log('Hello, World!');
+/**
+ * This is required to avoid treeshaking this file.
+ * As long as anything from a file is being used, the entire file
+ * is being kept.
+ * We need this workaround to be able to export functions for testing.
+ * Having 'export' in index.ts cause issues with clasp / Apps Script.
+ */
+export const app = null;
