@@ -27,6 +27,13 @@ import { ClaspHelper } from './clasp-helper.js';
 import { config } from './config.js';
 import { PackageHelper } from './package-helper.js';
 
+/**
+ * This is required to avoid treeshaking this file.
+ * As long as anything from a file is being used, the entire file
+ * is being kept.
+ */
+export const app = null;
+
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
@@ -400,7 +407,7 @@ export async function init() {
  *
  * @param {string} verb
  */
-async function run(verb: string) {
+export async function run(verb: string) {
   try {
     if (verb === 'init') {
       await init();

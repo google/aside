@@ -49,13 +49,14 @@ export const config: {
     'lint':
       'npm run license && eslint --fix --no-error-on-unmatched-pattern src/ test/',
     'bundle': 'rollup --no-treeshake -c rollup.config.mjs',
-    'build': 'npm run clean && npm run bundle',
+    'build':
+      'npm run clean && npm run bundle && ncp appsscript.json dist/appsscript.json',
     'license': 'license-check-and-add add -f license-config.json',
     'test': 'jest test/ --passWithNoTests --detectOpenHandles',
     'deploy':
-      'npm run lint && npm run test && npm run build && ncp appsscript.json dist/appsscript.json && ncp .clasp-dev.json .clasp.json && clasp push -f',
+      'npm run lint && npm run test && npm run build && ncp .clasp-dev.json .clasp.json && clasp push -f',
     'deploy:prod':
-      'npm run lint && npm run test && npm run build && ncp appsscript.json dist/appsscript.json && ncp .clasp-prod.json .clasp.json && clasp push',
+      'npm run lint && npm run test && npm run build && ncp .clasp-prod.json .clasp.json && clasp push',
   },
   filesCopy: {
     '.editorconfig': '.editorconfig',
