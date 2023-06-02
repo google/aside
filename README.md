@@ -94,6 +94,36 @@ You can provide the `init` command with some convenience options:
 
   Set Script ID for production environment without being asked for it
 
+## Troubleshooting
+
+### Unknown token 'export'
+
+While bundling generally resolves all `export`s and `import`s it keeps `export`s in the entrypoint causing `clasp` to fail pushing. This can be an issue for example if you're trying to export functions from `index.ts` for testing.
+
+The recommended approach is to use the entrypoint (`index.ts`) only to expose global functions to Apps Script while importing all business logic from separate modules.
+
+### Module not included in bundle
+
+Bundling includes treeshaking of unused files to keep the bundle size as small as possible. If any of your modules contain only global functions with no import-path leading to the entrypoint (e.g. to be called from the menu), those would not be included in the bundle.
+
+To avoid this, you can use the following workaround:
+
+Export a dummy variable from your module:
+
+```ts
+export const dummy = null;
+```
+
+Import and call the dummy variable in your entrypoint:
+
+```ts
+import { dummy } from './path/to/module';
+
+dummy;
+```
+
+As long as anything from a file is being used, the entire file will be kept.
+
 ## Disclaimer
 
 This is not an officially supported Google product.
