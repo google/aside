@@ -17,7 +17,6 @@
 
 import chalk from 'chalk';
 import fs from 'fs-extra';
-import meow from 'meow';
 import path from 'path';
 import prompts from 'prompts';
 import { fileURLToPath } from 'url';
@@ -36,42 +35,6 @@ export const app = null;
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-
-const cli = meow(
-  `
-	Usage
-	  $ @google/aside init [options]
-
-	Options
-	  --help        Prints this help message
-    --title, -t   Project title
-    --yes, -y     Assume yes for every prompt
-    --no, -n      Assume no for every prompt
-    --script-dev  Script ID for dev environment
-    --script-prod Script ID for production environment
-
-    Examples
-    $ @google/aside init -y
-    $ @google/aside init --title "Cool Title"
-`,
-  {
-    importMeta: import.meta,
-    flags: {
-      title: {
-        type: 'string',
-        alias: 't',
-      },
-      yes: {
-        type: 'boolean',
-        alias: 'y',
-      },
-      no: {
-        type: 'boolean',
-        alias: 'n',
-      },
-    },
-  }
-);
 
 export interface Options {
   yes: boolean;
@@ -372,17 +335,23 @@ async function handleClasp(options: Options) {
 /**
  * Handle environment initialization.
  */
-export async function init() {
+export async function init(
+  flags: {
+    title: string | undefined;
+    yes: boolean | undefined;
+    no: boolean | undefined;
+  } & Record<string, unknown>
+) {
   const projectTitle =
-    cli.flags.title ??
+    flags.title ??
     (await queryText('Project Title', 'Untitled', {
-      yes: cli.flags.yes,
-      no: cli.flags.no,
+      yes: flags.yes,
+      no: flags.no,
     } as Options));
 
   const options: Options = {
-    yes: cli.flags.yes || false,
-    no: cli.flags.no || false,
+    yes: flags.yes || false,
+    no: flags.no || false,
     title: projectTitle,
   };
 
@@ -401,21 +370,3 @@ export async function init() {
   // Handle clasp
   await handleClasp(options);
 }
-
-/**
- * Main entry point to coordinate execution based on verb.
- *
- * @param {string} verb
- */
-export async function run(verb: string) {
-  try {
-    if (verb === 'init') {
-      await init();
-    }
-  } catch (err) {
-    const error = err as Error;
-    console.log(error.message);
-  }
-}
-
-run(cli.input[0]);

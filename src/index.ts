@@ -13,6 +13,59 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { app } from './app';
+import meow from 'meow';
+import { init } from './app.js';
 
-app;
+const cli = meow(
+  `
+	Usage
+	  $ @google/aside init [options]
+
+	Options
+	  --help        Prints this help message
+    --title, -t   Project title
+    --yes, -y     Assume yes for every prompt
+    --no, -n      Assume no for every prompt
+    --script-dev  Script ID for dev environment
+    --script-prod Script ID for production environment
+
+    Examples
+    $ @google/aside init -y
+    $ @google/aside init --title "Cool Title"
+`,
+  {
+    importMeta: import.meta,
+    flags: {
+      title: {
+        type: 'string',
+        alias: 't',
+      },
+      yes: {
+        type: 'boolean',
+        alias: 'y',
+      },
+      no: {
+        type: 'boolean',
+        alias: 'n',
+      },
+    },
+  }
+);
+
+/**
+ * Main entry point to coordinate execution based on verb.
+ *
+ * @param {string} verb
+ */
+export async function run(verb: string) {
+  try {
+    if (verb === 'init') {
+      await init(cli.flags);
+    }
+  } catch (err) {
+    const error = err as Error;
+    console.log(error.message);
+  }
+}
+
+run(cli.input[0]);
