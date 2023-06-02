@@ -1,3 +1,5 @@
+import { hello } from '../src/example-module';
+
 /**
  * Copyright 2023 Google LLC
  *
@@ -13,12 +15,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-/**
- * This is required to avoid treeshaking this file.
- * As long as anything from a file is being used, the entire file
- * is being kept.
- * We need this workaround to be able to export functions for testing.
- * Having 'export' in index.ts cause issues with clasp / Apps Script.
- */
-export const app = null;
+describe('example-module', () => {
+  describe('hello', () => {
+    it('Returns a hello message', () => {
+      expect(hello()).toBe('Hello Apps Script!');
+    });
+  });
+});
