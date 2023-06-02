@@ -13,8 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { app } from './app';
+import { hello } from './example-module';
 
-app;
-
-console.log('Hello, World!');
+console.log(hello());
