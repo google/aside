@@ -16,6 +16,7 @@
 import typescript from 'rollup-plugin-typescript2';
 import cleanup from 'rollup-plugin-cleanup';
 import license from 'rollup-plugin-license';
+import prettier from 'rollup-plugin-prettier';
 import { fileURLToPath } from 'url';
 
 export default {
@@ -34,6 +35,7 @@ export default {
       },
     }),
     typescript(),
+    prettier(),
   ],
   context: 'this',
 };
