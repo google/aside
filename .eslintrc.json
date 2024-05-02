@@ -15,5 +15,5 @@
   "rules": {
     "prettier/prettier": "error"
   },
-  "ignorePatterns": ["template/**/*"]
+  "ignorePatterns": ["template/**/*", "template-ui/**/*"]
 }

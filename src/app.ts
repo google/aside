@@ -23,7 +23,7 @@ import { fileURLToPath } from 'url';
 import writeFileAtomic from 'write-file-atomic';
 
 import { ClaspHelper } from './clasp-helper.js';
-import { config } from './config.js';
+import { config, configForUi } from './config.js';
 import { PackageHelper } from './package-helper.js';
 
 /**
@@ -36,10 +36,13 @@ export const app = null;
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
+let CONFIG: typeof config;
+
 export interface Options {
   yes: boolean;
   no: boolean;
   title: string;
+  ui: boolean;
 }
 
 /**
@@ -70,7 +73,7 @@ export async function handlePackageJson(options: Options) {
   // Synchronize scripts
   console.log(`${chalk.green('\u2714')}`, 'Adding scripts...');
   const existingScripts = packageJson.getScripts();
-  for (const [name, script] of Object.entries(config.scripts)) {
+  for (const [name, script] of Object.entries(CONFIG.scripts)) {
     if (name in existingScripts && existingScripts[name] !== script) {
       const replace = await query(
         `package.json already has a script for ${chalk.bold(name)}:\n` +
@@ -97,7 +100,7 @@ export async function handlePackageJson(options: Options) {
 
   // Install dev dependencies
   console.log(`${chalk.green('\u2714')}`, 'Installing dependencies...');
-  packageJson.installPackages(config.dependencies);
+  packageJson.installPackages(CONFIG.dependencies);
 }
 
 /**
@@ -190,11 +193,11 @@ async function readFile(path: string): Promise<string | undefined> {
  * @param {Options} options
  */
 async function handleConfigMerge(options: Options) {
-  for (const filename of Object.keys(config.filesMerge)) {
+  for (const filename of Object.keys(CONFIG.filesMerge)) {
     const sourcePath = path.join(__dirname, '../../', filename);
     let sourceLines = (await readFile(sourcePath))?.split('\n');
 
-    const targetFile = await readFile(config.filesMerge[filename]);
+    const targetFile = await readFile(CONFIG.filesMerge[filename]);
     const targetLines = targetFile?.split('\n') ?? [];
 
     const missingLines =
@@ -205,7 +208,7 @@ async function handleConfigMerge(options: Options) {
     if (targetFile !== undefined) {
       const message =
         `${chalk.bold(
-          config.filesMerge[filename]
+          CONFIG.filesMerge[filename]
         )} already exists but is missing content\n` +
         missingLines.map(line => `+${chalk.green(line)}`).join('\n');
 
@@ -217,7 +220,7 @@ async function handleConfigMerge(options: Options) {
     sourceLines = targetLines.concat(missingLines);
 
     await writeFileAtomic(
-      config.filesMerge[filename],
+      CONFIG.filesMerge[filename],
       `${sourceLines.filter(item => item).join('\n')}\n`
     );
   }
@@ -229,17 +232,17 @@ async function handleConfigMerge(options: Options) {
  * @param {Options} options
  */
 async function handleConfigCopy(options: Options) {
-  for (const filename of Object.keys(config.filesCopy)) {
+  for (const filename of Object.keys(CONFIG.filesCopy)) {
     try {
       const sourcePath = path.join(__dirname, '../../', filename);
       const source = await readFile(sourcePath);
-      const target = await readFile(config.filesCopy[filename]);
+      const target = await readFile(CONFIG.filesCopy[filename]);
 
       if (source === target || typeof source === 'undefined') continue;
 
       const writeFile = target
         ? await query(
-            `${chalk.bold(config.filesCopy[filename])} already exists`,
+            `${chalk.bold(CONFIG.filesCopy[filename])} already exists`,
             'Overwrite',
             false,
             options
@@ -247,7 +250,7 @@ async function handleConfigCopy(options: Options) {
         : true;
 
       if (writeFile) {
-        await writeFileAtomic(config.filesCopy[filename], source);
+        await writeFileAtomic(CONFIG.filesCopy[filename], source);
       }
     } catch (e) {
       const err = e as Error & { code?: string };
@@ -260,10 +263,17 @@ async function handleConfigCopy(options: Options) {
 
 /**
  * Handle putting template files in place.
+ *
+ * @param {Options} options
  */
-async function handleTemplate() {
+async function handleTemplate(options: Options) {
   const cwd = process.cwd();
-  const templates = path.join(__dirname, '../../template');
+  let templates;
+  if (options.ui) {
+    templates = path.join(__dirname, '../../template-ui');
+  } else {
+    templates = path.join(__dirname, '../../template');
+  }
 
   const items = await fs.readdir(templates);
 
@@ -319,7 +329,7 @@ async function handleClasp(options: Options) {
   // Prepare clasp project environment
   if (scriptIdDev) {
     console.log(`${chalk.green('\u2714')}`, `Cloning ${scriptIdDev}...`);
-    claspHelper.cloneAndPull(scriptIdDev, scriptIdProd, 'dist');
+    await claspHelper.cloneAndPull(scriptIdDev, scriptIdProd, 'dist');
   } else {
     console.log(`${chalk.green('\u2714')}`, `Creating ${options.title}...`);
     const res = await claspHelper.create(options.title, scriptIdProd, './dist');
@@ -353,7 +363,16 @@ export async function init(
     yes: flags.yes || false,
     no: flags.no || false,
     title: projectTitle,
+    ui: flags.no || false,
   };
+
+  options.ui = await query('', 'Create an Angular UI?', false, options);
+
+  if (options.ui) {
+    CONFIG = configForUi;
+  } else {
+    CONFIG = config;
+  }
 
   // Handle package.json
   await handlePackageJson(options);
@@ -365,8 +384,16 @@ export async function init(
   await handleConfigMerge(options);
 
   // Handle template
-  await handleTemplate();
+  await handleTemplate(options);
 
   // Handle clasp
   await handleClasp(options);
+
+  if (options.ui) {
+    console.log();
+    console.log(
+      'Make sure to run npm install to install all the Angular UI dependencies'
+    );
+    console.log();
+  }
 }
