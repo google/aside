@@ -76,3 +76,73 @@ export const config: {
     '.prettierignore': '.prettierignore',
   },
 };
+
+export const configForUi: {
+  dependencies: string[];
+  scripts: PackageJson.Scripts;
+  filesCopy: Record<string, string>;
+  filesMerge: Record<string, string>;
+} = {
+  dependencies: [
+    '@angular/cli',
+    '@google/clasp',
+    '@types/google-apps-script',
+    '@types/jest',
+    '@typescript-eslint/eslint-plugin',
+    'eslint',
+    'eslint-config-prettier',
+    'eslint-plugin-prettier',
+    'fs-extra',
+    'gts',
+    'inquirer@^8.0.0',
+    'jest',
+    'license-check-and-add',
+    'ncp',
+    'prettier',
+    'rimraf',
+    'rollup',
+    'rollup-plugin-cleanup',
+    'rollup-plugin-license',
+    'rollup-plugin-typescript2',
+    'ts-jest',
+    'typescript',
+  ],
+  scripts: {
+    'preinstall':
+      '(cd src/ && ng new --skip-git --skip-tests=true --routing=false --ssr=false --style=css --standalone ui && cd ui/ && ng add --skip-confirmation @angular/material)',
+    'clean': 'rimraf build dist',
+    'lint':
+      'npm run license && eslint --fix --no-error-on-unmatched-pattern src/ test/',
+    'bundle': 'rollup --no-treeshake -c rollup.config.mjs',
+    'build': 'npm run clean && npm run bundle',
+    'build-ui': 'npm run build --prefix src/ui',
+    'license': 'license-check-and-add add -f license-config.json',
+    'test': 'jest test/ --passWithNoTests --detectOpenHandles',
+    'test-ui': 'npm run test --prefix src/ui',
+    'deploy':
+      'npm run lint && npm run test && npm run build && ncp appsscript.json dist/appsscript.json && ncp .clasp-dev.json .clasp.json && npm run build-ui && npm run deploy-ui && clasp push -f',
+    'deploy-ui': 'node deploy-ui.mjs',
+    'deploy:prod':
+      'npm run lint && npm run test && npm run build && ncp appsscript.json dist/appsscript.json && ncp .clasp-prod.json .clasp.json && npm run build-ui && npm run deploy-ui && clasp push',
+    'serve-ui': '(cd src/ui && ng serve)',
+    'postinstall': '(cd src/ui && npm install)',
+  },
+  filesCopy: {
+    '.editorconfig': '.editorconfig',
+    '.eslintrc.json': '.eslintrc.json',
+    '.prettierrc.json': '.prettierrc.json',
+    'jest.config.json': 'jest.config.json',
+    'LICENSE': 'LICENSE',
+    'license-config.json': 'license-config.json',
+    'license-header.txt': 'license-header.txt',
+    'rollup.config.mjs': 'rollup.config.mjs',
+    'deploy-ui.mjs': 'deploy-ui.mjs',
+    'tsconfig.json': 'tsconfig.json',
+  },
+  filesMerge: {
+    'dist/.gitignore-target': '.gitignore',
+    '.claspignore': '.claspignore',
+    '.eslintignore': '.eslintignore',
+    '.prettierignore': '.prettierignore',
+  },
+};

@@ -70,6 +70,10 @@ After running the `init` command above, ASIDE will go ahead and do the following
 
   ASIDE is using [clasp](https://github.com/google/clasp) to pull and push code from and to Apps Script
 
+- **(Optionally) Create an Angular Material UI**
+
+  ASIDE will run the necessary commands to create an Angular application with Angular Material components, if the option is chosen
+
 ## Options
 
 You can provide the `init` command with some convenience options:
@@ -123,6 +127,23 @@ dummy;
 ```
 
 As long as anything from a file is being used, the entire file will be kept.
+
+### The UI is not working on Apps Script
+
+When installing Angular Material, if you chose `Include and enable animations`, you need to make some changes to `src/ui/src/app/app.config.ts`.
+
+ASIDE currently doesn't support chunk files which will be generated for lazy-loading through `provideAnimationsAsync()`.
+
+Change `app.config.ts` to:
+
+```
+import { ApplicationConfig } from '@angular/core';
+import { provideAnimations } from '@angular/platform-browser/animations';
+
+export const appConfig: ApplicationConfig = {
+  providers: [provideAnimations()]
+};
+```
 
 ## Disclaimer
 
