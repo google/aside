@@ -19,7 +19,8 @@
     ".prettierrc.json",
     "rollup.config.mjs",
     "tsconfig.json",
-    "template"
+    "template",
+    "template-ui"
   ],
   "repository": "google/aside",
   "main": "index.js",
