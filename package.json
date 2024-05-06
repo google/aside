@@ -1,6 +1,6 @@
 {
   "name": "@google/aside",
-  "version": "1.4.0",
+  "version": "1.4.1",
   "type": "module",
   "description": "Apps Script IDE framework",
   "bin": "dist/src/index.js",
@@ -19,7 +19,8 @@
     ".prettierrc.json",
     "rollup.config.mjs",
     "tsconfig.json",
-    "template"
+    "template",
+    "template-ui"
   ],
   "repository": "google/aside",
   "main": "index.js",
