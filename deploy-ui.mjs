@@ -50,7 +50,7 @@ for (const filename of files) {
     const jsContent = fs.readFileSync(oldPath).toString();
     fs.writeFileSync(
       newPath,
-      `<script type="text/javascript">\n${jsContent}\n</script>`
+      `<script type="module">\n${jsContent}\n</script>`
     );
   } else {
     newName = path.format({ ...path.parse(filename), base: '', ext: '.html' });
