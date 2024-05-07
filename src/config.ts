@@ -111,7 +111,7 @@ export const configForUi: {
   ],
   scripts: {
     'preinstall':
-      '(cd src/ && ng new --skip-git --skip-tests=true --routing=false --ssr=false --style=css --standalone ui && cd ui/ && ng add --skip-confirmation @angular/material)',
+      'test -d src/ui || (cd src/ && ng new --skip-git --skip-tests=true --routing=false --ssr=false --style=css --standalone ui && cd ui/ && ng add --skip-confirmation @angular/material)',
     'clean': 'rimraf build dist',
     'lint':
       'npm run license && eslint --fix --no-error-on-unmatched-pattern src/ test/',
@@ -126,8 +126,8 @@ export const configForUi: {
     'deploy-ui': 'node deploy-ui.mjs',
     'deploy:prod':
       'npm run lint && npm run test && npm run build && ncp appsscript.json dist/appsscript.json && ncp .clasp-prod.json .clasp.json && npm run build-ui && npm run deploy-ui && clasp push',
-    'serve-ui': '(cd src/ui && ng serve)',
-    'postinstall': '(cd src/ui && npm install)',
+    'serve-ui': 'cd src/ui && ng serve',
+    'postinstall': 'cd src/ui && npm install',
   },
   filesCopy: {
     '.editorconfig': '.editorconfig',
