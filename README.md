@@ -110,23 +110,13 @@ The recommended approach is to use the entrypoint (`index.ts`) only to expose gl
 
 Bundling includes treeshaking of unused files to keep the bundle size as small as possible. If any of your modules contain only global functions with no import-path leading to the entrypoint (e.g. to be called from the menu), those would not be included in the bundle.
 
-To avoid this, you can use the following workaround:
-
-Export a dummy variable from your module:
+To avoid this, you can use a [side-effect import](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/import#import_a_module_for_its_side_effects_only).
 
 ```ts
-export const dummy = null;
+import './path/to/module';
 ```
 
-Import and call the dummy variable in your entrypoint:
-
-```ts
-import { dummy } from './path/to/module';
-
-dummy;
-```
-
-As long as anything from a file is being used, the entire file will be kept.
+This will ensure that Rollup will not remove it from the bundle.
 
 ### The UI is not working on Apps Script
 
