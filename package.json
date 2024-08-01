@@ -1,6 +1,6 @@
 {
   "name": "@google/aside",
-  "version": "1.4.3",
+  "version": "1.4.4",
   "type": "module",
   "description": "Apps Script IDE framework",
   "bin": "dist/src/index.js",
