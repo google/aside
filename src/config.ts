@@ -111,7 +111,7 @@ export const configForUi: {
   ],
   scripts: {
     'preinstall':
-      'test -d src/ui || (cd src/ && ng new --skip-git --skip-tests=true --routing=false --ssr=false --style=css --standalone ui && cd ui/ && ng add --skip-confirmation @angular/material)',
+      'test -d src/ui || (cd src/ && ng new --skip-git --skip-tests=true --routing=false --ssr=false --standalone ui && cd ui/ && ng add --skip-confirmation @angular/material)',
     'clean': 'rimraf build dist',
     'lint':
       'npm run license && eslint --fix --no-error-on-unmatched-pattern src/ test/',
