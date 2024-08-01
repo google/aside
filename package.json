@@ -6,6 +6,7 @@
   "bin": "dist/src/index.js",
   "files": [
     "deploy-ui.mjs",
+    "fix-animations.mjs",
     "dist/src",
     "dist/.gitignore-target",
     ".claspignore",

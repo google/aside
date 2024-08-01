@@ -118,23 +118,6 @@ import './path/to/module';
 
 This will ensure that Rollup will not remove it from the bundle.
 
-### The UI is not working on Apps Script
-
-When installing Angular Material, if you chose `Include and enable animations`, you need to make some changes to `src/ui/src/app/app.config.ts`.
-
-ASIDE currently doesn't support chunk files which will be generated for lazy-loading through `provideAnimationsAsync()`.
-
-Change `app.config.ts` to:
-
-```
-import { ApplicationConfig } from '@angular/core';
-import { provideAnimations } from '@angular/platform-browser/animations';
-
-export const appConfig: ApplicationConfig = {
-  providers: [provideAnimations()]
-};
-```
-
 ## Disclaimer
 
 This is not an officially supported Google product.

@@ -127,7 +127,8 @@ export const configForUi: {
     'deploy:prod':
       'npm run lint && npm run test && npm run build && ncp appsscript.json dist/appsscript.json && ncp .clasp-prod.json .clasp.json && npm run build-ui && npm run deploy-ui && clasp push',
     'serve-ui': 'cd src/ui && ng serve',
-    'postinstall': 'cd src/ui && npm install',
+    'fix-animations': 'node fix-animations.mjs',
+    'postinstall': 'npm run fix-animations && cd src/ui && npm install',
   },
   filesCopy: {
     '.editorconfig': '.editorconfig',
@@ -139,6 +140,7 @@ export const configForUi: {
     'license-header.txt': 'license-header.txt',
     'rollup.config.mjs': 'rollup.config.mjs',
     'deploy-ui.mjs': 'deploy-ui.mjs',
+    'fix-animations.mjs': 'fix-animations.mjs',
     'tsconfig.json': 'tsconfig.json',
   },
   filesMerge: {
