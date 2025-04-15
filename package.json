@@ -1,6 +1,6 @@
 {
   "name": "@google/aside",
-  "version": "1.4.4",
+  "version": "1.4.5",
   "type": "module",
   "description": "Apps Script IDE framework",
   "bin": "dist/src/index.js",
@@ -43,7 +43,7 @@
     "google"
   ],
   "engines": {
-    "node": ">=14"
+    "node": ">=22"
   },
   "author": "Google Inc.",
   "license": "Apache-2.0",

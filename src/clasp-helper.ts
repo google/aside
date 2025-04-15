@@ -15,10 +15,10 @@
  * limitations under the License.
  */
 
-import fs from 'fs-extra';
-import path from 'path';
-import os from 'os';
 import spawn from 'cross-spawn';
+import fs from 'fs-extra';
+import os from 'os';
+import path from 'path';
 import writeFileAtomic from 'write-file-atomic';
 
 /**
@@ -83,7 +83,7 @@ export class ClaspHelper {
    * @returns {string}
    */
   extractSheetsLink(output: string) {
-    const sheetsLink = output.match(/Google Sheet: ([^\n]*)/);
+    const sheetsLink = output.match(/Created new document: ([^\n]*)/);
 
     return sheetsLink?.length ? sheetsLink[1] : 'Not found';
   }
@@ -94,7 +94,7 @@ export class ClaspHelper {
    * @returns {string}
    */
   extractScriptLink(output: string) {
-    const scriptLink = output.match(/Google Sheets Add-on script: ([^\n]*)/);
+    const scriptLink = output.match(/Created new script: ([^\n]*)/);
 
     return scriptLink?.length ? scriptLink[1] : 'Not found';
   }
@@ -114,7 +114,7 @@ export class ClaspHelper {
       'npx',
       [
         'clasp',
-        'create',
+        'create-script',
         '--type',
         'sheets',
         '--rootDir',
@@ -143,7 +143,7 @@ export class ClaspHelper {
    * @param {?string} scriptIdProd
    */
   async arrangeFiles(rootDir: string, scriptIdProd?: string) {
-    await fs.move(path.join(rootDir, '.clasp.json'), '.clasp-dev.json');
+    await fs.move('.clasp.json', '.clasp-dev.json');
 
     await fs.move(path.join(rootDir, 'appsscript.json'), 'appsscript.json');
 
