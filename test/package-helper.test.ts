@@ -73,7 +73,7 @@ describe('package-helper', () => {
         keywords: [],
         scripts: {},
         engines: {
-          node: '>=12',
+          node: '>=22',
         },
       });
     });

@@ -13,8 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import * as fs from 'fs-extra';
 import spawn from 'cross-spawn';
+import * as fs from 'fs-extra';
 import { ClaspHelper } from '../src/clasp-helper';
 
 jest.mock('fs-extra');
@@ -136,7 +136,7 @@ describe('clasp-helper', () => {
     });
 
     it('extracts sheets link', () => {
-      const output = 'New Google Sheet: https://drive.google.com/abc123';
+      const output = 'Created new document: https://drive.google.com/abc123';
 
       const res = claspHelper.extractSheetsLink(output);
 
@@ -152,8 +152,7 @@ describe('clasp-helper', () => {
     });
 
     it('extracts script link', () => {
-      const output =
-        'New Google Sheets Add-on script: https://drive.google.com/abc123';
+      const output = 'Created new script: https://drive.google.com/abc123';
 
       const res = claspHelper.extractScriptLink(output);
 
@@ -168,10 +167,7 @@ describe('clasp-helper', () => {
 
       await claspHelper.arrangeFiles('rootDir');
 
-      expect(fsMoveSpy).toHaveBeenCalledWith(
-        'rootDir/.clasp.json',
-        '.clasp-dev.json'
-      );
+      expect(fsMoveSpy).toHaveBeenCalledWith('.clasp.json', '.clasp-dev.json');
 
       expect(fsMoveSpy).toHaveBeenCalledWith(
         'rootDir/appsscript.json',
