@@ -118,6 +118,24 @@ import './path/to/module';
 
 This will ensure that Rollup will not remove it from the bundle.
 
+### Linter not allowing unused variables
+
+A [plugin for Google App Script](https://github.com/mato533/rollup-plugin-gas) is included in the Rollup configuration. This automatically creates top-level functions for anything declared on the global object. To avoid unused variables in your code, first use `declare global` to declare the functions you need, and then assign the actual function to your declaration. e.g.:
+
+```ts
+declare global {
+  onOpen(): void;
+}
+
+function onOpenFunc(): void {
+  SpreadsheetApp.getUI().createMenu('Stuff').addToUI();
+}
+
+global.onOpen = onOpenFunc;
+```
+
+This would result in a top-level `onOpen` function being created in the build results.
+
 ## Disclaimer
 
 This is not an officially supported Google product.
