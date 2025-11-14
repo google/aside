@@ -9,7 +9,8 @@
     ".github",
     "CONTRIBUTING",
     "build",
-    "dist"
+    "dist",
+    "src/ui/.angular"
   ],
   "license": "license-header.txt",
   "licenseFormats": {
