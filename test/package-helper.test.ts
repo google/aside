@@ -72,6 +72,7 @@ describe('package-helper', () => {
         license: 'Apache-2.0',
         keywords: [],
         scripts: {},
+        type: 'module',
         engines: {
           node: '>=22',
         },
