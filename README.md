@@ -1,5 +1,5 @@
 <!--
-Copyright 2025 Google LLC
+Copyright 2025 wywy LLC
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -14,15 +14,14 @@ See the License for the specific language governing permissions and
 limitations under the License.
 -->
 
-# Apps Script in IDE (ASIDE)
+# Apps Script in IDE (wyside)
 
-[![NPM Version](https://img.shields.io/npm/v/@google/aside)](https://www.npmjs.com/package/@google/aside)
-[![GitHub Action: CI](https://github.com/google/aside/actions/workflows/ci.yml/badge.svg)](https://github.com/google/aside/actions/workflows/ci.yml)
-[![Code Style: Google](https://img.shields.io/badge/code%20style-google-blueviolet.svg)](https://github.com/google/gts)
+- **Note**: This is a community-maintained fork of [@google/aside](https://github.com/google/aside).
+- The original project is created by Google but is not officially supported.
 
 ## Overview
 
-Apps Script in IDE (ASIDE) supports modern, robust and scalable Apps Script development by providing a framework for a local coding environment capable of formatting, linting, testing and much more.
+wyside supports modern, robust and scalable Apps Script development by providing a framework for a local coding environment capable of formatting, linting, testing and much more.
 
 Here are the main features:
 
@@ -97,26 +96,6 @@ You can provide the `init` command with some convenience options:
 - `--script-prod`
 
   Set Script ID for production environment without being asked for it
-
-## Troubleshooting
-
-### Unknown token 'export'
-
-While bundling generally resolves all `export`s and `import`s it keeps `export`s in the entrypoint causing `clasp` to fail pushing. This can be an issue for example if you're trying to export functions from `index.ts` for testing.
-
-The recommended approach is to use the entrypoint (`index.ts`) only to expose global functions to Apps Script while importing all business logic from separate modules.
-
-### Module not included in bundle
-
-Bundling includes treeshaking of unused files to keep the bundle size as small as possible. If any of your modules contain only global functions with no import-path leading to the entrypoint (e.g. to be called from the menu), those would not be included in the bundle.
-
-To avoid this, you can use a [side-effect import](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/import#import_a_module_for_its_side_effects_only).
-
-```ts
-import './path/to/module';
-```
-
-This will ensure that Rollup will not remove it from the bundle.
 
 ## Disclaimer
 
