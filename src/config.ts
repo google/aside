@@ -86,7 +86,7 @@ export const config: {
   },
 };
 
-export const configForUi: {
+export const configForAngular: {
   dependencies: string[];
   scripts: PackageJson.Scripts;
   filesCopy: Record<string, string>;
@@ -158,3 +158,32 @@ export const configForUi: {
     '.prettierignore': '.prettierignore',
   },
 };
+
+export const configForSvelte: {
+  dependencies: string[];
+  scripts: PackageJson.Scripts;
+  filesCopy: Record<string, string>;
+  filesMerge: Record<string, string>;
+} = {
+  dependencies: [...config.dependencies, 'fs-extra@^11.1.0'],
+  scripts: {
+    ...config.scripts,
+    'preinstall': 'node setup-svelte.mjs',
+    'build-ui': 'npm run build --prefix src/ui',
+    'deploy-ui': 'node deploy-ui.mjs src/ui/dist',
+    'deploy':
+      'npm run license && npm run build && ncp appsscript.json dist/appsscript.json && ncp .clasp-dev.json .clasp.json && npm run build-ui && npm run deploy-ui && clasp push -f',
+    'deploy:prod':
+      'npm run test && npm run build && ncp appsscript.json dist/appsscript.json && ncp .clasp-prod.json .clasp.json && npm run build-ui && npm run deploy-ui && clasp push',
+    'serve-ui': 'cd src/ui && npm run dev',
+    'postinstall': 'cd src/ui && npm install',
+  },
+  filesCopy: {
+    ...config.filesCopy,
+    'deploy-ui.mjs': 'deploy-ui.mjs',
+    'setup-svelte.mjs': 'setup-svelte.mjs',
+  },
+  filesMerge: config.filesMerge,
+};
+
+export const configForUi = configForAngular;

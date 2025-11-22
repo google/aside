@@ -18,7 +18,9 @@ import fs from 'fs-extra';
 import path from 'path';
 
 const cwd = process.cwd();
-const uiDist = path.join(cwd, 'src/ui/dist/ui/browser');
+const uiDist = process.argv[2]
+  ? path.resolve(cwd, process.argv[2])
+  : path.join(cwd, 'src/ui/dist/ui/browser');
 const files = fs
   .readdirSync(uiDist)
   .filter(f => f.endsWith('.html') || f.endsWith('.js') || f.endsWith('.css'));

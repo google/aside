@@ -1,11 +1,12 @@
 {
   "name": "@wywyjp/wyside",
-  "version": "1.4.6",
+  "version": "1.5.0",
   "type": "module",
   "description": "Apps Script IDE framework",
   "bin": "dist/src/index.js",
   "files": [
     "deploy-ui.mjs",
+    "setup-svelte.mjs",
     "fix-animations.mjs",
     "dist/src",
     "dist/.gitignore-target",

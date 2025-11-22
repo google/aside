@@ -23,7 +23,7 @@ import { fileURLToPath } from 'url';
 import writeFileAtomic from 'write-file-atomic';
 
 import { ClaspHelper } from './clasp-helper.js';
-import { config, configForUi } from './config.js';
+import { config, configForAngular, configForSvelte } from './config.js';
 import { PackageHelper } from './package-helper.js';
 
 /**
@@ -43,6 +43,7 @@ export interface Options {
   no: boolean;
   title: string;
   ui: boolean;
+  uiFramework?: 'angular' | 'svelte';
 }
 
 /**
@@ -165,6 +166,39 @@ async function query(
   });
 
   return answer.result;
+}
+
+/**
+ * Prompt user for selection from a list.
+ *
+ * @param {string} message
+ * @param {{title: string, value: string}[]}
+ * @param {string} defaultVal
+ * @param {Options} options
+ * @returns {Promise<string>}
+ */
+async function querySelect(
+  message: string,
+  choices: { title: string; value: string }[],
+  defaultVal: string,
+  options: Options
+): Promise<string> {
+  if (options.yes) {
+    return 'angular'; // Default to Angular if yes is passed, preserving legacy behavior
+  }
+  if (options.no) {
+    return 'none';
+  }
+
+  const response = await prompts({
+    type: 'select',
+    name: 'value',
+    message: message,
+    choices: choices,
+    initial: choices.findIndex(c => c.value === defaultVal),
+  });
+
+  return response.value;
 }
 
 /**
@@ -363,15 +397,31 @@ export async function init(
     yes: flags.yes || false,
     no: flags.no || false,
     title: projectTitle,
-    ui: flags.no || false,
+    ui: false,
   };
 
-  options.ui = await query('', 'Create an Angular UI?', false, options);
+  const uiFramework = await querySelect(
+    'Create a UI?',
+    [
+      { title: 'None', value: 'none' },
+      { title: 'Angular', value: 'angular' },
+      { title: 'Svelte', value: 'svelte' },
+    ],
+    'none',
+    options
+  );
 
-  if (options.ui) {
-    CONFIG = configForUi;
+  if (uiFramework === 'angular') {
+    CONFIG = configForAngular;
+    options.ui = true;
+    options.uiFramework = 'angular';
+  } else if (uiFramework === 'svelte') {
+    CONFIG = configForSvelte;
+    options.ui = true;
+    options.uiFramework = 'svelte';
   } else {
     CONFIG = config;
+    options.ui = false;
   }
 
   // Handle package.json
@@ -392,7 +442,9 @@ export async function init(
   if (options.ui) {
     console.log();
     console.log(
-      'Make sure to run npm install to install all the Angular UI dependencies'
+      `Make sure to run npm install to install all the ${
+        options.uiFramework === 'angular' ? 'Angular' : 'Svelte'
+      } UI dependencies`
     );
     console.log();
   }

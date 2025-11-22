@@ -73,6 +73,51 @@ After running the `init` command above, ASIDE will go ahead and do the following
 
   ASIDE will run the necessary commands to create an Angular application with Angular Material components, if the option is chosen
 
+## UI Development
+
+If you chose to create an Angular UI during initialization, you can find the source code in `src/ui`. This is a standard Angular application.
+
+### Development
+
+To run the UI locally during development:
+
+```bash
+npm run serve-ui
+```
+
+This will start the Angular development server (usually at <http://localhost:4200>).
+
+### Deployment
+
+To deploy your project including the UI to Google Apps Script:
+
+```bash
+npm run deploy
+```
+
+This command automates the following steps:
+
+1. Builds the Angular application.
+2. Converts the build artifacts into GAS-compatible HTML files (using `deploy-ui.mjs`).
+3. Pushes the code to your Apps Script project using `clasp`.
+
+### Server-side Integration
+
+Ensure your GAS server-side code (e.g., `src/index.ts`) is set up to serve the UI. You typically need a `doGet` function and an `include` helper:
+
+```typescript
+function doGet() {
+  return HtmlService.createTemplateFromFile('ui')
+    .evaluate()
+    .setTitle('My App')
+    .setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL);
+}
+
+function include(filename: string) {
+  return HtmlService.createHtmlOutputFromFile(filename).getContent();
+}
+```
+
 ## Options
 
 You can provide the `init` command with some convenience options:
