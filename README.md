@@ -14,7 +14,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 -->
 
-# Apps Script in IDE (wyside)
+# wyside(wywy + aside)
 
 - **Note**: This is a community-maintained fork of [@google/aside](https://github.com/google/aside).
 - The original project is created by Google but is not officially supported.
