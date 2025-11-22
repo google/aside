@@ -16,7 +16,7 @@ limitations under the License.
 
 # wyside
 
-- **Note**: This is a community-maintained fork of [@google/aside](https://github.com/google/aside).
+- **Note**: This is a community-maintained fork of [@wywyjp/wyside](https://github.com/google/aside).
 - The original project is created by Google but is not officially supported.
 
 ## Overview
@@ -45,8 +45,8 @@ Here are the main features:
 
 The simplest way to get started is:
 
-```
-npx @google/aside init
+```bash
+npx @wywyjp/wyside init
 ```
 
 ## What it does
