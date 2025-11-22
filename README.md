@@ -96,7 +96,3 @@ You can provide the `init` command with some convenience options:
 - `--script-prod`
 
   Set Script ID for production environment without being asked for it
-
-## Disclaimer
-
-This is not an officially supported Google product.
