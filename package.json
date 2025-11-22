@@ -1,5 +1,5 @@
 {
-  "name": "@google/aside",
+  "name": "@wywyjp/wyside",
   "version": "1.4.6",
   "type": "module",
   "description": "Apps Script IDE framework",
@@ -24,8 +24,8 @@
     "template",
     "template-ui"
   ],
-  "repository": "google/aside",
-  "main": "index.js",
+  "repository": "wywyjp/wyside",
+  "main": "dist/src/index.js",
   "scripts": {
     "clean": "rimraf build",
     "lint": "npm run license && eslint --fix src/ test/",
@@ -45,7 +45,7 @@
   "engines": {
     "node": ">=22"
   },
-  "author": "Google Inc.",
+  "author": "wywyjp inc.",
   "license": "Apache-2.0",
   "devDependencies": {
     "@rollup/plugin-commonjs": "^24.0.1",

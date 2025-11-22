@@ -3,7 +3,7 @@ Copyright 2025 wywy LLC
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
-You may obtain a copy of the License at
+you may obtain a copy of the License at
 
       http://www.apache.org/licenses/LICENSE-2.0
 
@@ -14,7 +14,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 -->
 
-# wyside(wywy + aside)
+# wyside
 
 - **Note**: This is a community-maintained fork of [@google/aside](https://github.com/google/aside).
 - The original project is created by Google but is not officially supported.
