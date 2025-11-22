@@ -31,6 +31,7 @@ const DEFAULT_PACKAGE_JSON_CONTENT: PackageJson = {
   name: '',
   version: '0.0.0',
   description: '',
+  type: 'module',
   main: 'build/index.js',
   license: 'Apache-2.0',
   keywords: [],
