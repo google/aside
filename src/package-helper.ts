@@ -15,9 +15,9 @@
  */
 import spawn from 'cross-spawn';
 import fs from 'fs-extra';
-import { PackageJson } from 'type-fest';
+import {PackageJson} from 'type-fest';
 import writeFileAtomic from 'write-file-atomic';
-import { compare } from './compare.js';
+import {compare} from './compare.js';
 
 export interface PackageInstallResult {
   requested: string[];
@@ -58,7 +58,7 @@ function toPackageName(name: string) {
 export class PackageHelper {
   constructor(
     private content: PackageJson = {},
-    private readonly path = DEFAULT_PACKAGE_JSON_PATH
+    private readonly path = DEFAULT_PACKAGE_JSON_PATH,
   ) {}
 
   /**
@@ -99,7 +99,7 @@ export class PackageHelper {
     const content = this.getContent();
     const dependencies = content.dependencies ?? {};
     if (includeDevDependencies) {
-      return { ...dependencies, ...content.devDependencies };
+      return {...dependencies, ...content.devDependencies};
     }
     return dependencies;
   }
@@ -142,7 +142,7 @@ export class PackageHelper {
     if (!this.content.scripts) {
       this.content.scripts = {};
     }
-    this.content.scripts = { ...this.getScripts(), [name]: script };
+    this.content.scripts = {...this.getScripts(), [name]: script};
     return this.getScripts();
   }
 
@@ -160,7 +160,7 @@ export class PackageHelper {
   installPackages(packages: string[]): PackageInstallResult {
     const packagesToInstall = compare(
       this.getDependencyPackages(true),
-      packages
+      packages,
     ).right;
 
     if (packagesToInstall.length === 0) {
@@ -174,7 +174,7 @@ export class PackageHelper {
     const executionResult = spawn.sync(
       'npm',
       ['install', '--ignore-scripts', '--silent'].concat(packagesToInstall),
-      { encoding: 'utf-8' }
+      {encoding: 'utf-8'},
     );
     if (executionResult.stderr) {
       throw new Error(executionResult.stderr);
@@ -187,7 +187,7 @@ export class PackageHelper {
     }
     const packageDiff = compare(
       this.getDependencyPackages(true),
-      packageJsonOnDisk.getDependencyPackages(true)
+      packageJsonOnDisk.getDependencyPackages(true),
     );
     this.content = packageJsonOnDisk.getContent();
     return {
@@ -204,7 +204,7 @@ export class PackageHelper {
   async save(): Promise<PackageHelper> {
     await writeFileAtomic(
       this.path,
-      `${JSON.stringify(this.content, null, '  ')}\n`
+      `${JSON.stringify(this.content, null, '  ')}\n`,
     );
     return this;
   }
@@ -241,7 +241,7 @@ export class PackageHelper {
         ...DEFAULT_PACKAGE_JSON_CONTENT,
         name: toPackageName(name),
       },
-      path
+      path,
     );
   }
 }

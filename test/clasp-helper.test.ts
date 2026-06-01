@@ -13,9 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+/* eslint-disable @typescript-eslint/no-explicit-any */
+
 import spawn from 'cross-spawn';
 import * as fs from 'fs-extra';
-import { ClaspHelper } from '../src/clasp-helper';
+import {ClaspHelper} from '../src/clasp-helper.js';
 
 jest.mock('fs-extra');
 
@@ -171,12 +173,12 @@ describe('clasp-helper', () => {
 
       expect(fsMoveSpy).toHaveBeenCalledWith(
         'rootDir/appsscript.json',
-        'appsscript.json'
+        'appsscript.json',
       );
 
       expect(fsCopyFileSpy).toHaveBeenCalledWith(
         '.clasp-dev.json',
-        '.clasp-prod.json'
+        '.clasp-prod.json',
       );
     });
 
@@ -191,7 +193,7 @@ describe('clasp-helper', () => {
       expect(writeConfigSpy).toHaveBeenCalledWith(
         'abc123',
         'rootDir',
-        '.clasp-prod.json'
+        '.clasp-prod.json',
       );
     });
   });

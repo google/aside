@@ -19,12 +19,12 @@ import chalk from 'chalk';
 import fs from 'fs-extra';
 import path from 'path';
 import prompts from 'prompts';
-import { fileURLToPath } from 'url';
+import {fileURLToPath} from 'url';
 import writeFileAtomic from 'write-file-atomic';
 
-import { ClaspHelper } from './clasp-helper.js';
-import { config, configForUi } from './config.js';
-import { PackageHelper } from './package-helper.js';
+import {ClaspHelper} from './clasp-helper.js';
+import {config, configForUi} from './config.js';
+import {PackageHelper} from './package-helper.js';
 
 /**
  * This is required to avoid treeshaking this file.
@@ -60,7 +60,7 @@ export async function handlePackageJson(options: Options) {
       '',
       `Generate ${chalk.bold('package.json')}?`,
       true,
-      options
+      options,
     );
     if (init) {
       packageJson = PackageHelper.init(options.title);
@@ -80,7 +80,7 @@ export async function handlePackageJson(options: Options) {
           `-${chalk.red(existingScripts[name])}\n+${chalk.green(script)}`,
         'Replace',
         false,
-        options
+        options,
       );
       if (replace) {
         packageJson.updateScript(name, script);
@@ -114,7 +114,7 @@ export async function handlePackageJson(options: Options) {
 async function queryText(
   message: string,
   defaultVal: string,
-  options: Options
+  options: Options,
 ): Promise<string> {
   if (options.yes) {
     return defaultVal;
@@ -143,7 +143,7 @@ async function query(
   message: string,
   question: string,
   defaultVal: boolean,
-  options: Options
+  options: Options,
 ): Promise<boolean> {
   if (options.yes) {
     return true;
@@ -177,7 +177,7 @@ async function readFile(path: string): Promise<string | undefined> {
   try {
     return await fs.readFile(path, 'utf8');
   } catch (e) {
-    const err = e as Error & { code?: string };
+    const err = e as Error & {code?: string};
     if (err.code !== 'ENOENT') {
       throw new Error(`Unknown error reading ${path}: ${err.message}`);
     }
@@ -208,7 +208,7 @@ async function handleConfigMerge(options: Options) {
     if (targetFile !== undefined) {
       const message =
         `${chalk.bold(
-          CONFIG.filesMerge[filename]
+          CONFIG.filesMerge[filename],
         )} already exists but is missing content\n` +
         missingLines.map(line => `+${chalk.green(line)}`).join('\n');
 
@@ -221,7 +221,7 @@ async function handleConfigMerge(options: Options) {
 
     await writeFileAtomic(
       CONFIG.filesMerge[filename],
-      `${sourceLines.filter(item => item).join('\n')}\n`
+      `${sourceLines.filter(item => item).join('\n')}\n`,
     );
   }
 }
@@ -245,7 +245,7 @@ async function handleConfigCopy(options: Options) {
             `${chalk.bold(CONFIG.filesCopy[filename])} already exists`,
             'Overwrite',
             false,
-            options
+            options,
           )
         : true;
 
@@ -253,7 +253,7 @@ async function handleConfigCopy(options: Options) {
         await writeFileAtomic(CONFIG.filesCopy[filename], source);
       }
     } catch (e) {
-      const err = e as Error & { code?: string };
+      const err = e as Error & {code?: string};
       if (err.code !== 'ENOENT') {
         throw new Error(`Unknown error reading ${path}: ${err.message}`);
       }
@@ -281,12 +281,12 @@ async function handleTemplate(options: Options) {
     const targetDirName = path.join(cwd, item);
 
     // Create folder
-    fs.mkdirSync(targetDirName, { recursive: true });
+    fs.mkdirSync(targetDirName, {recursive: true});
 
     // Only install the template if no ts files exist in target directory.
     const files = fs.readdirSync(targetDirName);
     const tsFiles = files.filter((file: string) =>
-      file.toLowerCase().endsWith('.ts')
+      file.toLowerCase().endsWith('.ts'),
     );
 
     // Copy files
@@ -323,7 +323,7 @@ async function handleClasp(options: Options) {
   const scriptIdProd = await queryText(
     'Script ID for production environment (optional)',
     scriptIdDev,
-    options
+    options,
   );
 
   // Prepare clasp project environment
@@ -350,7 +350,7 @@ export async function init(
     title: string | undefined;
     yes: boolean | undefined;
     no: boolean | undefined;
-  } & Record<string, unknown>
+  } & Record<string, unknown>,
 ) {
   const projectTitle =
     flags.title ??
@@ -392,7 +392,7 @@ export async function init(
   if (options.ui) {
     console.log();
     console.log(
-      'Make sure to run npm install to install all the Angular UI dependencies'
+      'Make sure to run npm install to install all the Angular UI dependencies',
     );
     console.log();
   }

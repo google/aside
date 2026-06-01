@@ -17,7 +17,7 @@ import cleanup from 'rollup-plugin-cleanup';
 import license from 'rollup-plugin-license';
 import prettier from 'rollup-plugin-prettier';
 import typescript from 'rollup-plugin-typescript2';
-import { fileURLToPath } from 'url';
+import {fileURLToPath, URL} from 'url';
 
 export default {
   input: 'src/index.ts',
@@ -26,7 +26,7 @@ export default {
     format: 'esm',
   },
   plugins: [
-    cleanup({ comments: 'none', extensions: ['.ts'] }),
+    cleanup({comments: 'none', extensions: ['.ts']}),
     license({
       banner: {
         content: {
@@ -35,7 +35,7 @@ export default {
       },
     }),
     typescript(),
-    prettier({ parser: 'typescript' }),
+    prettier({parser: 'typescript'}),
   ],
   context: 'this',
 };

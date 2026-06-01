@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-import { PackageJson } from 'type-fest';
+import {PackageJson} from 'type-fest';
 
 export const config: {
   dependencies: string[];
@@ -27,11 +27,11 @@ export const config: {
     '@google/clasp',
     '@types/google-apps-script',
     '@types/jest',
-    '@typescript-eslint/eslint-plugin@^5.55.0',
-    'eslint@^8.36.0',
+    '@typescript-eslint/eslint-plugin@^8.60.0',
+    'eslint@^10.4.0',
     'eslint-config-prettier',
     'eslint-plugin-prettier',
-    'gts',
+    'gts@^7.0.0',
     'jest',
     'license-check-and-add',
     'ncp',
@@ -46,29 +46,29 @@ export const config: {
     'typescript',
   ],
   scripts: {
-    'clean': 'rimraf build dist',
-    'lint':
-      'npm run license && eslint --fix --no-error-on-unmatched-pattern src/ test/',
-    'bundle': 'rollup --no-treeshake -c rollup.config.mjs',
-    'build':
+    clean: 'rimraf build dist',
+    lint: 'npm run license && eslint --fix --no-error-on-unmatched-pattern src/ test/',
+    bundle: 'rollup --no-treeshake -c rollup.config.mjs',
+    build:
       'npm run clean && npm run bundle && ncp appsscript.json dist/appsscript.json',
-    'license': 'license-check-and-add add -f license-config.json',
-    'test': 'jest test/ --passWithNoTests --detectOpenHandles',
-    'deploy':
+    license: 'license-check-and-add add -f license-config.json',
+    test: 'jest test/ --passWithNoTests --detectOpenHandles',
+    deploy:
       'npm run lint && npm run test && npm run build && ncp .clasp-dev.json .clasp.json && clasp push -f',
     'deploy:prod':
       'npm run lint && npm run test && npm run build && ncp .clasp-prod.json .clasp.json && clasp push',
   },
   filesCopy: {
     '.editorconfig': '.editorconfig',
-    '.eslintrc.json': '.eslintrc.json',
-    '.prettierrc.json': '.prettierrc.json',
+    '.prettierrc.cjs': '.prettierrc.js',
+    'eslint.config.cjs': 'eslint.config.js',
+    'eslint.ignores.cjs': 'eslint.ignores.js',
     'jest.config.json': 'jest.config.json',
-    'LICENSE': 'LICENSE',
+    LICENSE: 'LICENSE',
     'license-config.json': 'license-config.json',
     'license-header.txt': 'license-header.txt',
     'rollup.config.mjs': 'rollup.config.mjs',
-    'tsconfig.json': 'tsconfig.json',
+    'tsconfig.template.json': 'tsconfig.json',
   },
   filesMerge: {
     'dist/.gitignore-target': '.gitignore',
@@ -89,12 +89,12 @@ export const configForUi: {
     '@google/clasp',
     '@types/google-apps-script',
     '@types/jest',
-    '@typescript-eslint/eslint-plugin@^5.55.0',
-    'eslint@^8.36.0',
+    '@typescript-eslint/eslint-plugin@^8.60.0',
+    'eslint@^10.4.0',
     'eslint-config-prettier',
     'eslint-plugin-prettier',
     'fs-extra',
-    'gts',
+    'gts@^7.0.0',
     'inquirer@^8.0.0',
     'jest',
     'license-check-and-add',
@@ -110,38 +110,38 @@ export const configForUi: {
     'typescript',
   ],
   scripts: {
-    'preinstall':
+    preinstall:
       'test -d src/ui || (cd src/ && ng new --skip-git --skip-tests=true --routing=false --ssr=false --standalone ui && cd ui/ && ng add --skip-confirmation @angular/material)',
-    'clean': 'rimraf build dist',
-    'lint':
-      'npm run license && eslint --fix --no-error-on-unmatched-pattern src/ test/',
-    'bundle': 'rollup --no-treeshake -c rollup.config.mjs',
-    'build': 'npm run clean && npm run bundle',
+    clean: 'rimraf build dist',
+    lint: 'npm run license && eslint --fix --no-error-on-unmatched-pattern src/ test/',
+    bundle: 'rollup --no-treeshake -c rollup.config.mjs',
+    build: 'npm run clean && npm run bundle',
     'build-ui': 'npm run build --prefix src/ui',
-    'license': 'license-check-and-add add -f license-config.json',
-    'test': 'jest test/ --passWithNoTests --detectOpenHandles',
+    license: 'license-check-and-add add -f license-config.json',
+    test: 'jest test/ --passWithNoTests --detectOpenHandles',
     'test-ui': 'npm run test --prefix src/ui',
-    'deploy':
+    deploy:
       'npm run lint && npm run test && npm run build && ncp appsscript.json dist/appsscript.json && ncp .clasp-dev.json .clasp.json && npm run build-ui && npm run deploy-ui && clasp push -f',
     'deploy-ui': 'node deploy-ui.mjs',
     'deploy:prod':
       'npm run lint && npm run test && npm run build && ncp appsscript.json dist/appsscript.json && ncp .clasp-prod.json .clasp.json && npm run build-ui && npm run deploy-ui && clasp push',
     'serve-ui': 'cd src/ui && ng serve',
     'fix-animations': 'node fix-animations.mjs',
-    'postinstall': 'npm run fix-animations && cd src/ui && npm install',
+    postinstall: 'npm run fix-animations && cd src/ui && npm install',
   },
   filesCopy: {
     '.editorconfig': '.editorconfig',
-    '.eslintrc.json': '.eslintrc.json',
-    '.prettierrc.json': '.prettierrc.json',
+    '.prettierrc.cjs': '.prettierrc.js',
+    'eslint.config.cjs': 'eslint.config.js',
+    'eslint.ignores.cjs': 'eslint.ignores.js',
     'jest.config.json': 'jest.config.json',
-    'LICENSE': 'LICENSE',
+    LICENSE: 'LICENSE',
     'license-config.json': 'license-config.json',
     'license-header.txt': 'license-header.txt',
     'rollup.config.mjs': 'rollup.config.mjs',
     'deploy-ui.mjs': 'deploy-ui.mjs',
     'fix-animations.mjs': 'fix-animations.mjs',
-    'tsconfig.json': 'tsconfig.json',
+    'tsconfig.template.json': 'tsconfig.json',
   },
   filesMerge: {
     'dist/.gitignore-target': '.gitignore',

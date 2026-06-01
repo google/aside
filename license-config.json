@@ -4,13 +4,21 @@
     ".editorconfig",
     ".eslintignore",
     ".gitignore",
+    ".husky/**",
     ".prettierignore",
+    ".prettierrc.cjs",
+    ".prettierrc.js",
     "*.txt",
     ".github",
     "CONTRIBUTING",
     "build",
     "dist",
-    "src/ui/.angular"
+    "eslint.ignores.js",
+    "eslint.ignores.cjs",
+    "eslint.config.js",
+    "eslint.config.cjs",
+    "src/ui/.angular",
+    "src/ui/.prettierrc"
   ],
   "license": "license-header.txt",
   "licenseFormats": {

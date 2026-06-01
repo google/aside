@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 import meow from 'meow';
-import { init } from './app.js';
+import {init} from './app.js';
 
 const cli = meow(
   `
@@ -39,18 +39,18 @@ const cli = meow(
     flags: {
       title: {
         type: 'string',
-        alias: 't',
+        shortFlag: 't',
       },
       yes: {
         type: 'boolean',
-        alias: 'y',
+        shortFlag: 'y',
       },
       no: {
         type: 'boolean',
-        alias: 'n',
+        shortFlag: 'n',
       },
     },
-  }
+  },
 );
 
 /**
@@ -69,4 +69,4 @@ export async function run(verb: string) {
   }
 }
 
-run(cli.input[0]);
+void run(cli.input[0]);

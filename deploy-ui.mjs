@@ -16,6 +16,7 @@
 
 import fs from 'fs-extra';
 import path from 'path';
+import process from 'process';
 
 const cwd = process.cwd();
 const uiDist = path.join(cwd, 'src/ui/dist/ui/browser');
@@ -36,24 +37,24 @@ for (const filename of files) {
     let htmlContent = fs.readFileSync(oldPath).toString();
     htmlContent = htmlContent.replaceAll(
       scriptRegex,
-      "<?!= include('$1'); ?>\n"
+      "<?!= include('$1'); ?>\n",
     );
     htmlContent = htmlContent.replaceAll(
       cssRegex,
-      "\n<?!= include('$1'); ?>\n"
+      "\n<?!= include('$1'); ?>\n",
     );
     fs.writeFileSync(newPath, htmlContent);
   } else if (path.extname(filename) === '.js') {
-    newName = path.format({ ...path.parse(filename), base: '', ext: '.html' });
+    newName = path.format({...path.parse(filename), base: '', ext: '.html'});
     const newPath = path.join(cwd, 'dist', newName);
     // Add a <script> tag around the js code
     const jsContent = fs.readFileSync(oldPath).toString();
     fs.writeFileSync(
       newPath,
-      `<script type="module">\n${jsContent}\n</script>`
+      `<script type="module">\n${jsContent}\n</script>`,
     );
   } else {
-    newName = path.format({ ...path.parse(filename), base: '', ext: '.html' });
+    newName = path.format({...path.parse(filename), base: '', ext: '.html'});
     const newPath = path.join(cwd, 'dist', newName);
     const cssContent = fs.readFileSync(oldPath).toString();
     fs.writeFileSync(newPath, `<style>\n${cssContent}\n</style>`);
