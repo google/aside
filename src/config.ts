@@ -51,7 +51,7 @@ export const config: {
     bundle: 'rollup --no-treeshake -c rollup.config.mjs',
     build:
       'npm run clean && npm run bundle && ncp appsscript.json dist/appsscript.json',
-    license: 'license-check-and-add add -f license-config.json',
+    license: 'license-check-and-add add -f license-config.json -r $(date +%Y)',
     test: 'jest test/ --passWithNoTests --detectOpenHandles',
     deploy:
       'npm run lint && npm run test && npm run build && ncp .clasp-dev.json .clasp.json && clasp push -f',
@@ -117,7 +117,7 @@ export const configForUi: {
     bundle: 'rollup --no-treeshake -c rollup.config.mjs',
     build: 'npm run clean && npm run bundle',
     'build-ui': 'npm run build --prefix src/ui',
-    license: 'license-check-and-add add -f license-config.json',
+    license: 'license-check-and-add add -f license-config.json -r $(date +%Y)',
     test: 'jest test/ --passWithNoTests --detectOpenHandles',
     'test-ui': 'npm run test --prefix src/ui',
     deploy:
