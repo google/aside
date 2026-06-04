@@ -32,7 +32,7 @@
     "lint": "npm run license && eslint --fix src/ test/",
     "lint:staged": "npm run license && lint-staged",
     "build": "npm run clean && npm run lint && tsc && npm run copy-files",
-    "license": "license-check-and-add add -f license-config.json",
+    "license": "license-check-and-add add -f license-config.json -r $(date +%Y)",
     "test": "jest test/ --detectOpenHandles",
     "copy-files": "ncp .gitignore dist/.gitignore-target",
     "prepare": "is-ci || husky install"
