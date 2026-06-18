@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import fs from 'fs';
 import cleanup from 'rollup-plugin-cleanup';
 import license from 'rollup-plugin-license';
 import prettier from 'rollup-plugin-prettier';
@@ -29,9 +30,12 @@ export default {
     cleanup({comments: 'none', extensions: ['.ts']}),
     license({
       banner: {
-        content: {
-          file: fileURLToPath(new URL('license-header.txt', import.meta.url)),
-        },
+        content: fs
+          .readFileSync(
+            fileURLToPath(new URL('license-header.txt', import.meta.url)),
+            'utf8',
+          )
+          .replace(/%%\[0-9\]\{4\}%%/g, new Date().getFullYear().toString()),
       },
     }),
     typescript(),
