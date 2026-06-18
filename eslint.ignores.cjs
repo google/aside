@@ -22,4 +22,6 @@ module.exports = [
   '**/tmp/**',
   '**/build/**',
   '**/*.log',
+  '**/template/**',
+  '**/template-ui/**',
 ];
