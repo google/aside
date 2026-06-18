@@ -13,11 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import fs from 'fs';
 import cleanup from 'rollup-plugin-cleanup';
 import license from 'rollup-plugin-license';
 import prettier from 'rollup-plugin-prettier';
 import typescript from 'rollup-plugin-typescript2';
-import { fileURLToPath } from 'url';
+import {fileURLToPath, URL} from 'url';
 
 export default {
   input: 'src/index.ts',
@@ -26,16 +27,19 @@ export default {
     format: 'esm',
   },
   plugins: [
-    cleanup({ comments: 'none', extensions: ['.ts'] }),
+    cleanup({comments: 'none', extensions: ['.ts']}),
     license({
       banner: {
-        content: {
-          file: fileURLToPath(new URL('license-header.txt', import.meta.url)),
-        },
+        content: fs
+          .readFileSync(
+            fileURLToPath(new URL('license-header.txt', import.meta.url)),
+            'utf8',
+          )
+          .replace(/%%\[0-9\]\{4\}%%/g, new Date().getFullYear().toString()),
       },
     }),
     typescript(),
-    prettier({ parser: 'typescript' }),
+    prettier({parser: 'typescript'}),
   ],
   context: 'this',
 };

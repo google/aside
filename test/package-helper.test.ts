@@ -13,10 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { SpawnSyncReturns } from 'child_process';
+import {SpawnSyncReturns} from 'child_process';
 import spawn from 'cross-spawn';
 import * as fs from 'fs-extra';
-import { PackageHelper } from '../src/package-helper';
+import {PackageHelper} from '../src/package-helper.js';
 
 jest.mock('fs-extra');
 
@@ -81,13 +81,13 @@ describe('package-helper', () => {
 
   describe('getContent', () => {
     it('returns the current package.json contents', () => {
-      const content = { name: 'test', main: 'index.js' };
+      const content = {name: 'test', main: 'index.js'};
       const pkgHelper = new PackageHelper(content);
 
       expect(pkgHelper.getContent()).toEqual(content);
     });
     it('returns a copy of the current package.json content', () => {
-      const content = { name: 'test', main: 'index.js' };
+      const content = {name: 'test', main: 'index.js'};
       const pkgHelper = new PackageHelper(content);
 
       const pkgContent = pkgHelper.getContent();
@@ -99,7 +99,7 @@ describe('package-helper', () => {
 
   describe('getName', () => {
     it('returns the current package name', () => {
-      const pkgHelper = new PackageHelper({ name: 'test' });
+      const pkgHelper = new PackageHelper({name: 'test'});
 
       expect(pkgHelper.getName()).toBe('test');
     });
@@ -141,7 +141,7 @@ describe('package-helper', () => {
 
   describe('updateScript', () => {
     it('adds a non-existent script', () => {
-      const pkgHelper = new PackageHelper({ scripts: { a: 'test' } });
+      const pkgHelper = new PackageHelper({scripts: {a: 'test'}});
 
       pkgHelper.updateScript('b', 'test');
       const newScripts = pkgHelper.getScripts();
@@ -149,7 +149,7 @@ describe('package-helper', () => {
       expect(newScripts['b']).toEqual('test');
     });
     it('overwrites an existing script', () => {
-      const pkgHelper = new PackageHelper({ scripts: { a: 'test' } });
+      const pkgHelper = new PackageHelper({scripts: {a: 'test'}});
 
       pkgHelper.updateScript('a', 'test1234');
       const newScripts = pkgHelper.getScripts();
@@ -169,7 +169,7 @@ describe('package-helper', () => {
     it('installs dependencies', async () => {
       const pkgBeforeInstall = {};
       const pkgAfterInstall = {
-        dependencies: { pkg1: '=0.0.1', pkg2: '=0.0.1' },
+        dependencies: {pkg1: '=0.0.1', pkg2: '=0.0.1'},
       };
 
       const spawnSyncSpy = jest
@@ -185,7 +185,7 @@ describe('package-helper', () => {
       expect(spawnSyncSpy).toHaveBeenCalledWith(
         'npm',
         ['install', '--ignore-scripts', '--silent', 'pkg1', 'pkg2'],
-        { encoding: 'utf-8' }
+        {encoding: 'utf-8'},
       );
       expect(loadSpy).toHaveBeenCalled();
       expect(result).toEqual({
@@ -197,10 +197,10 @@ describe('package-helper', () => {
 
     it('only install missing dependencies', () => {
       const pkgBeforeInstall = {
-        dependencies: { pkg1: '=0.0.1' },
+        dependencies: {pkg1: '=0.0.1'},
       };
       const pkgAfterInstall = {
-        dependencies: { pkg1: '=0.0.1', pkg2: '=0.0.1' },
+        dependencies: {pkg1: '=0.0.1', pkg2: '=0.0.1'},
       };
       const spawnSyncSpy = jest
         .spyOn(spawn, 'sync')
@@ -215,7 +215,7 @@ describe('package-helper', () => {
       expect(spawnSyncSpy).toHaveBeenCalledWith(
         'npm',
         ['install', '--ignore-scripts', '--silent', 'pkg2'],
-        { encoding: 'utf-8' }
+        {encoding: 'utf-8'},
       );
       expect(loadSpy).toHaveBeenCalled();
       expect(result).toEqual({
@@ -227,12 +227,12 @@ describe('package-helper', () => {
 
     it('only install packages that are not in devDependencies', () => {
       const pkgBeforeInstall = {
-        dependencies: { pkg1: '=0.0.1' },
-        devDependencies: { pkg2: '=0.0.1' },
+        dependencies: {pkg1: '=0.0.1'},
+        devDependencies: {pkg2: '=0.0.1'},
       };
       const pkgAfterInstall = {
-        dependencies: { pkg1: '=0.0.1', pkg3: '=0.0.1' },
-        devDependencies: { pkg2: '=0.0.1' },
+        dependencies: {pkg1: '=0.0.1', pkg3: '=0.0.1'},
+        devDependencies: {pkg2: '=0.0.1'},
       };
       const spawnSyncSpy = jest
         .spyOn(spawn, 'sync')
@@ -247,7 +247,7 @@ describe('package-helper', () => {
       expect(spawnSyncSpy).toHaveBeenCalledWith(
         'npm',
         ['install', '--ignore-scripts', '--silent', 'pkg3'],
-        { encoding: 'utf-8' }
+        {encoding: 'utf-8'},
       );
       expect(loadSpy).toHaveBeenCalled();
       expect(result).toEqual({
@@ -262,8 +262,8 @@ describe('package-helper', () => {
         .spyOn(spawn, 'sync')
         .mockImplementationOnce(() => spawnSuccessResult);
       const pkgHelper = new PackageHelper({
-        dependencies: { pkg1: '=0.0.1' },
-        devDependencies: { pkg2: '=0.0.1' },
+        dependencies: {pkg1: '=0.0.1'},
+        devDependencies: {pkg2: '=0.0.1'},
       });
 
       const result = pkgHelper.installPackages(['pkg1', 'pkg2']);

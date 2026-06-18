@@ -1,9 +1,9 @@
 {
   "compilerOptions": {
     "target": "es2020",
-    "module": "nodenext",
+    "module": "es2020",
     "lib": ["es2020", "dom"],
-    "moduleResolution": "nodenext",
+    "moduleResolution": "bundler",
     "outDir": "dist",
     "rootDir": ".",
     "strict": true,

@@ -41,7 +41,7 @@ export class ClaspHelper {
     const loggedIn = await this.isLoggedIn();
 
     if (!loggedIn) {
-      spawn.sync('npx', ['clasp', 'login'], { stdio: 'inherit' });
+      spawn.sync('npx', ['clasp', 'login'], {stdio: 'inherit'});
     }
   }
 
@@ -68,10 +68,10 @@ export class ClaspHelper {
       recursive: true,
       force: true,
     });
-    await fs.rm('appsscript.json', { force: true });
-    await fs.rm('.clasp.json', { force: true });
-    await fs.rm('.clasp-dev.json', { force: true });
-    await fs.rm('.clasp-prod.json', { force: true });
+    await fs.rm('appsscript.json', {force: true});
+    await fs.rm('.clasp.json', {force: true});
+    await fs.rm('.clasp-dev.json', {force: true});
+    await fs.rm('.clasp-prod.json', {force: true});
 
     // Make sure root dir exists
     await fs.mkdirs(rootDir);
@@ -122,10 +122,10 @@ export class ClaspHelper {
         '--title',
         `${title}`,
       ],
-      { encoding: 'utf-8' }
+      {encoding: 'utf-8'},
     );
 
-    this.arrangeFiles(rootDir, scriptIdProd);
+    await this.arrangeFiles(rootDir, scriptIdProd);
 
     // Extract URLs from output
     const output = res.output.join();
@@ -148,7 +148,7 @@ export class ClaspHelper {
     await fs.move(path.join(rootDir, 'appsscript.json'), 'appsscript.json');
 
     if (scriptIdProd) {
-      this.writeConfig(scriptIdProd, rootDir, '.clasp-prod.json');
+      await this.writeConfig(scriptIdProd, rootDir, '.clasp-prod.json');
     } else {
       await fs.copyFile('.clasp-dev.json', '.clasp-prod.json');
     }
@@ -163,7 +163,7 @@ export class ClaspHelper {
   async cloneAndPull(
     scriptIdDev: string,
     scriptIdProd: string,
-    rootDir: string
+    rootDir: string,
   ) {
     await this.clean(rootDir);
 
@@ -173,8 +173,8 @@ export class ClaspHelper {
     // Copy .clasp.json to clasp root dir
     await fs.copyFile('.clasp.json', path.join(rootDir, '.clasp.json'));
 
-    spawn.sync('npx', ['clasp', 'clone'], { stdio: 'inherit' });
-    spawn.sync('npx', ['clasp', 'pull'], { stdio: 'inherit' });
+    spawn.sync('npx', ['clasp', 'clone'], {stdio: 'inherit'});
+    spawn.sync('npx', ['clasp', 'pull'], {stdio: 'inherit'});
 
     // Copy/Move files to their designated place
     await this.arrangeFiles(rootDir, scriptIdProd);
@@ -190,7 +190,7 @@ export class ClaspHelper {
   async writeConfig(
     scriptId: string,
     rootDir: string,
-    filename: string | undefined = '.clasp.json'
+    filename: string | undefined = '.clasp.json',
   ) {
     const claspConfig = {
       scriptId: scriptId,

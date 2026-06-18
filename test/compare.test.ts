@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { compare } from '../src/compare';
+import {compare} from '../src/compare.js';
 
 describe('compare', () => {
   it('calculates the set differences of both input sets', () => {
