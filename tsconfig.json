@@ -16,5 +16,5 @@
     "types": ["jest", "node", "google-apps-script"]
   },
   "include": ["src/**/*", "test/**/*", "rollup.config.mjs"],
-  "exclude": ["src/ui"]
+  "exclude": ["src/ui/**/*"]
 }
