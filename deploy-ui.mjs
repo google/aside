@@ -21,16 +21,18 @@ import process from 'process';
 const cwd = process.cwd();
 const uiDist = path.join(cwd, 'src/ui/dist/ui/browser');
 const files = fs
-  .readdirSync(uiDist)
+  .readdirSync(uiDist, { recursive: true })
   .filter(f => f.endsWith('.html') || f.endsWith('.js') || f.endsWith('.css'));
 
 for (const filename of files) {
   let newName = filename;
   const oldPath = path.join(uiDist, filename);
 
+  fs.mkdirSync(path.join('dist', path.dirname(filename)), { recursive: true });
+
   if (path.extname(filename) === '.html') {
     newName = 'ui.html';
-    const newPath = path.join(cwd, 'dist', newName);
+    const newPath = path.join(cwd, 'dist', path.dirname(filename), newName);
     // Replace <script> tags with GAS <?!= ?> tags
     const scriptRegex = /<script src="([^"]*).js" type="module"><\/script>/g;
     const cssRegex = /<link rel="stylesheet" href="([^"]*).css".*(?=<\/head>)/g;
