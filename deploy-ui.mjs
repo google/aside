@@ -21,27 +21,30 @@ import process from 'process';
 const cwd = process.cwd();
 const uiDist = path.join(cwd, 'src/ui/dist/ui/browser');
 const files = fs
-  .readdirSync(uiDist)
+  .readdirSync(uiDist, { recursive: true })
   .filter(f => f.endsWith('.html') || f.endsWith('.js') || f.endsWith('.css'));
 
 for (const filename of files) {
   let newName = filename;
   const oldPath = path.join(uiDist, filename);
+  const dirName = path.dirname(filename);
+
+  fs.mkdirSync(path.join('dist', dirName), { recursive: true });
 
   if (path.extname(filename) === '.html') {
     newName = 'ui.html';
-    const newPath = path.join(cwd, 'dist', newName);
+    const newPath = path.join(cwd, 'dist', dirName, newName);
     // Replace <script> tags with GAS <?!= ?> tags
     const scriptRegex = /<script src="([^"]*).js" type="module"><\/script>/g;
     const cssRegex = /<link rel="stylesheet" href="([^"]*).css".*(?=<\/head>)/g;
     let htmlContent = fs.readFileSync(oldPath).toString();
     htmlContent = htmlContent.replaceAll(
       scriptRegex,
-      "<?!= include('$1'); ?>\n",
+      (match, fileName) => `<?!= include('${path.posix.join(dirName, fileName)}'); ?>\n`
     );
     htmlContent = htmlContent.replaceAll(
       cssRegex,
-      "\n<?!= include('$1'); ?>\n",
+      (match, fileName) => `\n<?!= include('${path.posix.join(dirName, fileName)}'); ?>\n`
     );
     fs.writeFileSync(newPath, htmlContent);
   } else if (path.extname(filename) === '.js') {
